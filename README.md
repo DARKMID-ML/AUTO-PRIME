@@ -1,4 +1,4 @@
-# Super Auto Badéma Sylla
+# AUTO PRIME
 
 Site web vitrine + catalogue automobile (Bamako, Mali).
 
