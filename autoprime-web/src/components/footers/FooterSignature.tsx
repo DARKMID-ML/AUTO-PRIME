@@ -3,6 +3,7 @@ import { useLogos } from "@/config/logo";
 import { SITE, mailtoHref, telHref } from "@/config/site";
 import { adresseComplete, useEntreprise } from "@/config/entreprise";
 import { useNavLinks } from "@/config/nav";
+import { usePages } from "@/config/pages";
 
 /**
  * Composition « Signature » — pied de page nocturne.
@@ -14,6 +15,7 @@ export default function FooterSignature() {
 
   const entreprise = useEntreprise();
   const navLinks = useNavLinks();
+  const pages = usePages();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -43,6 +45,13 @@ export default function FooterSignature() {
                   </Link>
                 </li>
               ))}
+              {pages["mes-demandes"] && (
+                <li>
+                  <Link to="/mes-demandes" className="text-gray-300 hover:text-white hover:translate-x-1 inline-block transition-all duration-200 text-sm">
+                    Mes demandes
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
 

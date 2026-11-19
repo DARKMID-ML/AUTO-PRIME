@@ -4,6 +4,7 @@ import { useLogos } from "@/config/logo";
 import { SITE } from "@/config/site";
 import { useEntreprise } from "@/config/entreprise";
 import { NAV_CTA, useNavLinks } from "@/config/nav";
+import { usePages } from "@/config/pages";
 
 /**
  * Composition « Signature » — barre de navigation en verre flottant.
@@ -16,6 +17,7 @@ export default function NavbarSignature() {
 
   const entreprise = useEntreprise();
   const navLinks = useNavLinks();
+  const pages = usePages();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [progression, setProgression] = useState(0);
@@ -53,6 +55,15 @@ export default function NavbarSignature() {
                 <span className="absolute left-0 -bottom-0.5 h-0.5 w-0 bg-brand-red transition-all duration-300 group-hover:w-full" />
               </Link>
             ))}
+            {pages["mes-demandes"] && (
+              <Link
+                to="/mes-demandes"
+                className="group relative text-text-primary hover:text-brand-red font-medium transition-colors py-2"
+              >
+                Mes demandes
+                <span className="absolute left-0 -bottom-0.5 h-0.5 w-0 bg-brand-red transition-all duration-300 group-hover:w-full" />
+              </Link>
+            )}
           </div>
 
           <div className="hidden md:block">
@@ -82,6 +93,15 @@ export default function NavbarSignature() {
                 {link.name}
               </Link>
             ))}
+            {pages["mes-demandes"] && (
+              <Link
+                to="/mes-demandes"
+                className="block px-3 py-2 text-base font-medium text-text-primary hover:text-brand-red transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Mes demandes
+              </Link>
+            )}
             <Link
               to={NAV_CTA.to}
               onClick={() => setIsMenuOpen(false)}
