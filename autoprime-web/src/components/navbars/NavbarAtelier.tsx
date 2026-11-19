@@ -4,7 +4,7 @@ import { useLogos } from "@/config/logo";
 import { SITE, telHref } from "@/config/site";
 import { adresseComplete, useEntreprise } from "@/config/entreprise";
 import { NAV_CTA, useNavLinks } from "@/config/nav";
-import { usePages } from "@/config/pages";
+import LienMesDemandes from "@/components/LienMesDemandes";
 
 /**
  * Composition « Atelier » — barre de navigation classique, en haut.
@@ -17,7 +17,6 @@ export default function NavbarAtelier() {
   const logos = useLogos();
   const entreprise = useEntreprise();
   const navLinks = useNavLinks();
-  const pages = usePages();
   const [ouvert, setOuvert] = useState(false);
 
   const fermer = () => setOuvert(false);
@@ -51,20 +50,15 @@ export default function NavbarAtelier() {
                 {lien.name}
               </NavLink>
             ))}
-            {pages["mes-demandes"] && (
-              <NavLink
-                to="/mes-demandes"
-                className={({ isActive }) =>
-                  `border-b-2 px-3 py-2 text-sm font-semibold transition-colors ${
-                    isActive
-                      ? "border-brand-red text-brand-red"
-                      : "border-transparent text-text-primary hover:border-[color:var(--at-line)] hover:text-brand-red"
-                  }`
-                }
-              >
-                Mes demandes
-              </NavLink>
-            )}
+            <LienMesDemandes
+              className={({ isActive }) =>
+                `border-b-2 px-3 py-2 text-sm font-semibold transition-colors ${
+                  isActive
+                    ? "border-brand-red text-brand-red"
+                    : "border-transparent text-text-primary hover:border-[color:var(--at-line)] hover:text-brand-red"
+                }`
+              }
+            />
           </div>
 
           <Link
@@ -107,20 +101,15 @@ export default function NavbarAtelier() {
                 <span className="material-symbols-outlined text-[17px] text-text-muted" aria-hidden="true">arrow_outward</span>
               </NavLink>
             ))}
-            {pages["mes-demandes"] && (
-              <NavLink
-                to="/mes-demandes"
-                onClick={fermer}
-                className={({ isActive }) =>
-                  `flex items-center justify-between border-b border-[color:var(--at-line)] py-3 text-sm font-semibold ${
-                    isActive ? "text-brand-red" : "text-text-primary"
-                  }`
-                }
-              >
-                Mes demandes
-                <span className="material-symbols-outlined text-[17px] text-text-muted" aria-hidden="true">arrow_outward</span>
-              </NavLink>
-            )}
+            <LienMesDemandes
+              onClick={fermer}
+              className={({ isActive }) =>
+                `flex items-center justify-between border-b border-[color:var(--at-line)] py-3 text-sm font-semibold ${
+                  isActive ? "text-brand-red" : "text-text-primary"
+                }`
+              }
+              apres={<span className="material-symbols-outlined text-[17px] text-text-muted" aria-hidden="true">arrow_outward</span>}
+            />
           </nav>
 
           <div className="mt-4 space-y-2 text-xs text-text-secondary">

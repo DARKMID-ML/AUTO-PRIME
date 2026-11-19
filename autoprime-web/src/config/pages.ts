@@ -24,13 +24,24 @@ export interface PageSite {
   description: string;
 }
 
+/**
+ * Lien du suivi de demande : libellé, route et condition d'affichage
+ * partagés par toutes les compositions (navbars et footers).
+ */
+export const LIEN_MES_DEMANDES: PageSite = {
+  cle: "mes-demandes",
+  nom: "Suivi de demande",
+  to: "/mes-demandes",
+  description: "Suivi des demandes côté client.",
+};
+
 /** Pages configurables (l'accueil et le contact sont toujours actifs). */
 export const PAGES_SITE: PageSite[] = [
   { cle: "vente", nom: "Vente", to: "/vente", description: "Catalogue des véhicules à vendre." },
   { cle: "location", nom: "Location", to: "/location", description: "Flotte et demandes de location." },
   { cle: "transit", nom: "Transit", to: "/transit", description: "Importation et dédouanement." },
   { cle: "services", nom: "Services", to: "/services", description: "Entretien, expertise et conseil." },
-  { cle: "mes-demandes", nom: "Suivi de demande", to: "/mes-demandes", description: "Suivi des demandes côté client." },
+  LIEN_MES_DEMANDES,
 ];
 
 const CLES = PAGES_SITE.map((page) => page.cle);
@@ -91,6 +102,12 @@ export function usePages(): EtatPages {
     () => cache,
     () => cache,
   );
+}
+
+/** Lien du suivi de demande, ou `null` quand la page est désactivée. */
+export function useLienMesDemandes(): PageSite | null {
+  const pages = usePages();
+  return pages["mes-demandes"] ? LIEN_MES_DEMANDES : null;
 }
 
 /** Active ou désactive une page, localement puis côté serveur. */
