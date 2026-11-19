@@ -1,28 +1,16 @@
 import { Link } from "react-router-dom"
-import ImageHero from "../assets/voiture.jpg"
-import { services, statistiques } from "../data/services"
+import PageHeader from "@/components/PageHeader"
+import { useEntreprise } from "@/config/entreprise"
+import { useAdminServices } from "@/config/contenu"
 
 export default function Services() {
+    const services = useAdminServices()
+    const entreprise = useEntreprise()
+
     return (
         <>
-            {/* ----------Hero----------- */}
-            <section
-                className="hero bg-gray-100 pt-20 bg-cover bg-center flex items-center justify-center relative"
-                style={{
-                    backgroundImage: `url(${ImageHero})`,
-                    height: "calc(40vh - 80px)",
-                }}
-            >
-                <div className="absolute inset-0 bg-brand-blue/50 z-10"></div>
-                <div className="max-w-7xl mx-auto px-4 relative z-20">
-                    <h1 className="text-white text-4xl md:text-5xl font-bold">
-                        Ce que Nous Pouvons vous offrir
-                    </h1>
-                    <p className="text-gray-200 text-lg mt-4 max-w-2xl">
-                        Une gamme complète de services dédiés à l'automobile au Mali.
-                    </p>
-                </div>
-            </section>
+            {/* ----------En-tête (commun aux compositions)----------- */}
+            <PageHeader page="services" />
 
             {/* ----------Grille des 6 Services----------- */}
             <section className="py-16 px-4 md:px-8 lg:px-16">
@@ -30,12 +18,12 @@ export default function Services() {
                     {services.map((service) => (
                         <div
                             key={service.id}
-                            className="bg-white rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col"
+                            className="bg-white rounded-2xl shadow-card hover:shadow-premium hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col border border-border-light"
                         >
-                            {/* En-tête coloré avec icône */}
-                            <div className={`${service.couleur} h-40 flex items-center justify-center`}>
+                            {/* En-tête coloré avec icône (balayage lumineux + icône flottante) */}
+                            <div className={`${service.couleur} h-40 flex items-center justify-center card-shine`}>
                                 <span
-                                    className="material-symbols-outlined text-white"
+                                    className="material-symbols-outlined text-white animate-bob"
                                     style={{ fontSize: "64px" }}
                                 >
                                     {service.icone}
@@ -67,9 +55,13 @@ export default function Services() {
             </section>
 
             {/* ----------Statistiques----------- */}
-            <section className="bg-brand-blue-dark py-16 px-4">
-                <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                    {statistiques.map((stat) => (
+            <section className="bg-brand-blue-dark py-16 px-4 relative overflow-hidden">
+                {/* Formes flottantes + anneau rotatif (animations permanentes) */}
+                <div className="absolute -top-16 -left-16 w-64 h-64 bg-brand-red/20 rounded-full blur-3xl animate-float" aria-hidden="true"></div>
+                <div className="absolute -bottom-20 right-0 w-72 h-72 bg-brand-blue/30 rounded-full blur-3xl animate-float-slow" style={{ animationDelay: "2s" }} aria-hidden="true"></div>
+                <div className="hidden lg:block absolute top-1/2 -translate-y-1/2 right-[6%] w-44 h-44 rounded-full border-2 border-dashed border-white/10 animate-spin-slow" aria-hidden="true"></div>
+                <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center relative">
+                    {entreprise.statistiques.map((stat) => (
                         <div key={stat.id}>
                             <p className="text-4xl md:text-5xl font-bold text-white mb-2">
                                 {stat.chiffre}
@@ -82,9 +74,10 @@ export default function Services() {
                 </div>
             </section>
 
-            {/* ----------Bannière CTA----------- */}
-            <section className="bg-gradient-to-r from-brand-blue to-brand-blue-dark py-16 px-4 text-center">
-                <div className="max-w-3xl mx-auto">
+            {/* ----------Bannière CTA (dégradé animé en continu)----------- */}
+            <section className="bg-gradient-to-r from-brand-blue via-brand-red-dark to-brand-blue-dark bg-[length:220%_220%] animate-gradient-xy py-16 px-4 text-center relative overflow-hidden">
+                <div className="absolute -top-24 left-1/4 w-72 h-72 bg-brand-red/20 rounded-full blur-3xl animate-float" aria-hidden="true" />
+                <div className="max-w-3xl mx-auto relative">
                     <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
                         Besoin d'un service sur mesure ?
                     </h2>
@@ -93,7 +86,7 @@ export default function Services() {
                     </p>
                     <Link
                         to="/contact"
-                        className="bg-brand-red hover:bg-brand-red-dark text-white font-bold py-3 px-8 rounded transition-colors inline-block"
+                        className="btn-premium animate-pulse-glow text-white font-bold py-3.5 px-8 rounded-full inline-block"
                     >
                         Contacter un expert
                     </Link>

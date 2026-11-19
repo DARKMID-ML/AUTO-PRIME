@@ -1,26 +1,55 @@
-import { useForm, ValidationError } from '@formspree/react';
-import { Link } from "react-router-dom"
+import { useState } from 'react';
+import { mailtoHref, telHref } from '@/config/site';
+import { adresseComplete, useEntreprise } from '@/config/entreprise';
+import { apiSend } from '@/config/api';
+import PageHeader from '@/components/PageHeader';
 
 export default function Contact() {
-    const [state, handleSubmit] = useForm("xaqraoal");
+    const entreprise = useEntreprise();
+    // Envoi du message : formulaire maison branché sur POST /api/contact
+    // (repli Formspree conservé dans SITE.formspreeContact pour le futur).
+    const [envoi, setEnvoi] = useState<'repos' | 'enCours' | 'ok' | 'echec'>('repos');
 
-    if (state.succeeded) {
+    async function envoyer(event: React.FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const data = new FormData(form);
+        const request = {
+            nom: String(data.get('nom') || '').trim(),
+            email: String(data.get('email') || '').trim(),
+            telephone: String(data.get('telephone') || '').trim(),
+            sujet: String(data.get('sujet') || '').trim(),
+            message: String(data.get('message') || '').trim(),
+        };
+        setEnvoi('enCours');
+        const reponse = await apiSend('/api/contact', 'POST', request);
+        if (reponse) {
+            setEnvoi('ok');
+            form.reset();
+        } else {
+            setEnvoi('echec');
+        }
+    }
+
+    if (envoi === 'ok') {
         return (
             <>
-                <section className="pt-28 pb-12 bg-brand-blue-dark text-white">
-                    <div className="max-w-7xl mx-auto px-4">
-
-                        <h1 className="text-4xl md:text-5xl font-bold">NOUS CONTACTER</h1>
-                    </div>
-                </section>
+                <PageHeader page="contact" />
                 <section className="py-16 bg-brand-light">
                     <div className="max-w-7xl mx-auto px-4">
                         <div className="bg-green-50 border border-green-400 text-green-700 p-8 rounded-lg text-center max-w-lg mx-auto">
-                            <span className="material-symbols-outlined text-4xl mb-2">check_circle</span>
+                            <span className="material-symbols-outlined text-4xl mb-2 animate-pulse">check_circle</span>
                             <p className="text-lg font-medium">
                                 Message envoyé ! Merci de nous avoir contactés.
                                 Nous vous répondrons dans les plus brefs délais.
                             </p>
+                            <button
+                                type="button"
+                                onClick={() => setEnvoi('repos')}
+                                className="mt-4 underline underline-offset-2 hover:text-green-900"
+                            >
+                                Envoyer un autre message
+                            </button>
                         </div>
                     </div>
                 </section>
@@ -31,26 +60,18 @@ export default function Contact() {
     return (
         <>
             {/* ============================== */}
-            {/* BLOC A : HEADER                */}
+            {/* BLOC A : EN-TÊTE                */}
             {/* ============================== */}
-            <section className="pt-28 pb-12 bg-brand-blue-dark text-white">
-                <div className="max-w-7xl mx-auto px-4">
-                    {/* Breadcrumb */}
-                    {/* <p className="text-sm text-gray-300 mb-4">
-                        <Link to="/" className="hover:text-white transition-colors">Accueil</Link>
-                        <span className="mx-2">{'>'}</span>
-                        <span className="text-white">Contact</span>
-                    </p> */}
-                    {/* Titre */}
-                    <h1 className="text-4xl md:text-5xl font-bold">NOUS CONTACTER</h1>
-                </div>
-            </section>
+            <PageHeader page="contact" />
 
             {/* ============================== */}
             {/* BLOC B : CONTENU 2 COLONNES     */}
             {/* ============================== */}
-            <section className="py-16 bg-brand-light">
-                <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12">
+            <section className="py-16 bg-brand-light relative overflow-hidden">
+                {/* Formes flottantes (animations permanentes) */}
+                <div className="absolute -top-16 -right-16 w-64 h-64 bg-brand-red/15 rounded-full blur-3xl animate-float" aria-hidden="true"></div>
+                <div className="absolute -bottom-20 -left-16 w-72 h-72 bg-brand-blue/15 rounded-full blur-3xl animate-float-slow" style={{ animationDelay: "2s" }} aria-hidden="true"></div>
+                <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12 relative">
 
                     {/* ============================== */}
                     {/* COLONNE GAUCHE : COORDONNÉES    */}
@@ -67,7 +88,7 @@ export default function Contact() {
                             </span>
                             <div>
                                 <h3 className="font-bold text-text-primary">Adresse</h3>
-                                <p className="text-text-secondary">ACI 2000, Bamako, Mali</p>
+                                <p className="text-text-secondary">{adresseComplete(entreprise)}</p>
                             </div>
                         </div>
 
@@ -78,8 +99,16 @@ export default function Contact() {
                             </span>
                             <div>
                                 <h3 className="font-bold text-text-primary">Téléphone</h3>
-                                <p className="text-text-secondary">+223 20 22 XX XX</p>
-                                <p className="text-text-secondary">+223 74 XX XX XX</p>
+                                <p className="text-text-secondary">
+                                    <a href={telHref(entreprise.telephoneFixe)} className="hover:text-brand-red transition-colors">
+                                        {entreprise.telephoneFixe}
+                                    </a>
+                                </p>
+                                <p className="text-text-secondary">
+                                    <a href={telHref(entreprise.telephoneMobile)} className="hover:text-brand-red transition-colors">
+                                        {entreprise.telephoneMobile}
+                                    </a>
+                                </p>
                             </div>
                         </div>
 
@@ -90,9 +119,9 @@ export default function Contact() {
                             </span>
                             <div>
                                 <h3 className="font-bold text-text-primary">Email</h3>
-                                <a href="mailto:contact@superauto-mali.com"
+                                <a href={mailtoHref(entreprise.email)}
                                    className="text-brand-red hover:text-brand-red-dark transition-colors">
-                                    contact@superauto-mali.com
+                                    {entreprise.email}
                                 </a>
                             </div>
                         </div>
@@ -104,19 +133,21 @@ export default function Contact() {
                             </span>
                             <div>
                                 <h3 className="font-bold text-text-primary">Horaires</h3>
-                                <p className="text-text-secondary">Lun - Ven : 08:00 - 18:00</p>
-                                <p className="text-text-secondary">Samedi : 09:00 - 15:00</p>
-                                <p className="text-text-secondary">Dimanche : Fermé</p>
+                                {entreprise.horaires.map((horaire) => (
+                                    <p key={horaire.jour} className="text-text-secondary">
+                                        {horaire.jour} : {horaire.heures}
+                                    </p>
+                                ))}
                             </div>
                         </div>
 
-                        {/* Carte placeholder */}
-                        <div className="bg-brand-surface border border-border-standard rounded-lg p-8 text-center mt-8">
-                            <span className="material-symbols-outlined text-brand-red text-4xl mb-2">
+                        {/* Carte : localisation avec icône qui rebondit doucement */}
+                        <div className="bg-brand-surface border border-border-standard rounded-lg p-8 text-center mt-8 relative overflow-hidden card-shine">
+                            <span className="material-symbols-outlined text-brand-red text-4xl mb-2 inline-block animate-bounce-slow">
                                 map
                             </span>
                             <p className="text-text-secondary font-medium">
-                                Bamako, Mali — ACI 2000
+                                {entreprise.adresseVille}, {entreprise.adressePays}
                             </p>
                         </div>
                     </div>
@@ -129,7 +160,7 @@ export default function Contact() {
                             Envoyez-nous un message
                         </h2>
 
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={envoyer}>
                             {/* Champ Nom */}
                             <div className="mb-5">
                                 <label htmlFor="nom" className="block text-sm font-medium text-text-primary mb-2">
@@ -145,7 +176,7 @@ export default function Contact() {
                                                focus:ring-2 focus:ring-brand-red focus:outline-none
                                                text-text-primary"
                                 />
-                                <ValidationError prefix="Nom" field="nom" errors={state.errors} />
+                                {/* Les champs requis valident côté navigateur; l'API confirme côté serveur. */}
                             </div>
 
                             {/* Champ Email */}
@@ -163,7 +194,7 @@ export default function Contact() {
                                                focus:ring-2 focus:ring-brand-red focus:outline-none
                                                text-text-primary"
                                 />
-                                <ValidationError prefix="Email" field="email" errors={state.errors} />
+{}
                             </div>
 
                             {/* Champ Téléphone */}
@@ -218,19 +249,24 @@ export default function Contact() {
                                                focus:ring-2 focus:ring-brand-red focus:outline-none
                                                text-text-primary resize-vertical"
                                 />
-                                <ValidationError prefix="Message" field="message" errors={state.errors} />
+{}
                             </div>
 
                             {/* Bouton Envoyer */}
+                            {envoi === 'echec' && (
+                                <p className="mb-4 text-sm text-red-600 border border-red-200 bg-red-50 rounded p-3">
+                                    Impossible d'envoyer le message : serveur momentanément indisponible.
+                                    Réessayez ou contactez-nous au {entreprise.telephoneFixe}.
+                                </p>
+                            )}
                             <button
                                 type="submit"
-                                disabled={state.submitting}
-                                className="bg-brand-red hover:bg-brand-red-dark text-white 
-                                           font-bold py-3 px-8 rounded transition-colors 
+                                disabled={envoi === 'enCours'}
+                                className="btn-premium text-white font-bold py-3 px-8 rounded-full
                                            flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <span className="material-symbols-outlined">send</span>
-                                {state.submitting ? 'ENVOI EN COURS...' : 'ENVOYER'}
+                                {envoi === 'enCours' ? 'ENVOI EN COURS...' : 'ENVOYER'}
                             </button>
                         </form>
                     </div>

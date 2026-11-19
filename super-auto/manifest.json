@@ -1,0 +1,9 @@
+{
+  "entrypoint": "index.js",
+  "compatibilityDate": "2026-10-27",
+  "modules": [
+    {"name": "index.js", "type": "esm", "path": "dist/assets/index-BOrN5qnW.js"}
+  ],
+  "assetsDirectory": "dist",
+  "spa": true
+}

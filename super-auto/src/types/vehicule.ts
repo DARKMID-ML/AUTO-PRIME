@@ -18,4 +18,8 @@ export interface Vehicule {
   peinture:string;
   interieur:string;
   category: string;// La catégorie est du TEXTE (ex: "Électrique")
+  carburant: string;// Le carburant est du TEXTE (ex: "Diesel", "Essence", "Électrique")
+  localisation: string;// La localisation est du TEXTE (ex: "Bamako", "Kayes")
+  /** Galerie de photos supplémentaires (optionnel — l'image principale reste `image`). */
+  photos?: string[];
 }

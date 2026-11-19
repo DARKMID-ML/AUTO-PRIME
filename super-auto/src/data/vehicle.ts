@@ -8,7 +8,7 @@ export const featuredVehicules: Vehicule[] = [
     annee: 2020,
     type: "Berline",
     prix: "45 000 €",
-    image: "https://www.tesla.com/sites/default/files/modelsx-new/social/model-s-hero-social.jpg",
+    image: "/images/vehicules/tesla-model-s.jpg",
     description: "Voiture électrique haut de gamme",
     statut: "Disponible",
     service: "Vente",
@@ -20,7 +20,9 @@ export const featuredVehicules: Vehicule[] = [
     atouts: "Autonomie 600 km, Accélération 0-100 km/h en 2,5s, Conduite autonome, Écran tactile 17 pouces",
     peinture: "Noir",
     interieur: "Cuir noir",
-    category: "Électrique"
+    category: "Électrique",
+    carburant: "Électrique",
+    localisation: "Bamako"
   },
   {
     id: 2,
@@ -29,7 +31,7 @@ export const featuredVehicules: Vehicule[] = [
     annee: 2023,
     type: "SUV",
     prix: "65 000 €",
-    image: "https://www.toyota.com/sites/default/files/land-cruiser-2023.jpg",
+    image: "/images/vehicules/toyota-land-cruiser.jpg",
     description: "4x4 robuste et fiable pour tous les terrains",
     statut: "Nouveau",
     service: "Vente",
@@ -41,7 +43,9 @@ export const featuredVehicules: Vehicule[] = [
     atouts: "4x4 permanent, Blocage de différentiel, Caméra 360°, Toit ouvrant",
     peinture: "Blanc perle",
     interieur: "Cuir beige",
-    category: "4x4"
+    category: "4x4",
+    carburant: "Diesel",
+    localisation: "Bamako"
   },
   {
     id: 3,
@@ -50,7 +54,7 @@ export const featuredVehicules: Vehicule[] = [
     annee: 2022,
     type: "Berline",
     prix: "38 000 €",
-    image: "https://www.mercedes-benz.com/sites/default/files/classe-e-2022.jpg",
+    image: "/images/vehicules/mercedes-classe-e.jpg",
     description: "Berline de luxe pour professionnels",
     statut: "Disponible",
     service: "Vente",
@@ -62,7 +66,9 @@ export const featuredVehicules: Vehicule[] = [
     atouts: "Sièges cuir chauffants, GPS, Toit panoramique, Système audio Burmester",
     peinture: "Gris argent",
     interieur: "Cuir noir",
-    category: "Luxe"
+    category: "Luxe",
+    carburant: "Essence",
+    localisation: "Bamako"
   },
   {
     id: 4,
@@ -71,7 +77,7 @@ export const featuredVehicules: Vehicule[] = [
     annee: 2024,
     type: "Pick-up",
     prix: "42 000 €",
-    image: "https://www.ford.com/sites/default/files/ranger-wildtrak-2024.jpg",
+    image: "/images/vehicules/ford-ranger.jpg",
     description: "Pick-up puissant pour le travail et l'aventure",
     statut: "Nouveau",
     service: "Vente",
@@ -83,7 +89,9 @@ export const featuredVehicules: Vehicule[] = [
     atouts: "Moteur diesel 2.0L, Benne utilitaire, Apple CarPlay, Android Auto",
     peinture: "Gris foncé",
     interieur: "Cuir noir",
-    category: "Utilitaire"
+    category: "Utilitaire",
+    carburant: "Diesel",
+    localisation: "Bamako"
   },
   {
     id: 5,
@@ -92,7 +100,7 @@ export const featuredVehicules: Vehicule[] = [
     annee: 2021,
     type: "SUV",
     prix: "55 000 €",
-    image: "https://www.bmw.com/sites/default/files/x5-2021.jpg",
+    image: "/images/vehicules/bmw-x5.jpg",
     description: "SUV premium aux performances exceptionnelles",
     statut: "Réservé",
     service: "Vente",
@@ -104,7 +112,9 @@ export const featuredVehicules: Vehicule[] = [
     atouts: "4x4, Toit panoramique, Caméra 360°, Sièges massants",
     peinture: "Bleu métallisé",
     interieur: "Cuir marron",
-    category: "Luxe"
+    category: "Luxe",
+    carburant: "Essence",
+    localisation: "Kayes"
   },
   {
     id: 6,
@@ -113,7 +123,7 @@ export const featuredVehicules: Vehicule[] = [
     annee: 2023,
     type: "SUV",
     prix: "150 €/jour",
-    image: "https://www.hyundai.com/sites/default/files/tucson-2023.jpg",
+    image: "/images/vehicules/hyundai-tucson.jpg",
     description: "SUV confortable et économique en location",
     statut: "Disponible",
     service: "Location",
@@ -125,7 +135,9 @@ export const featuredVehicules: Vehicule[] = [
     atouts: "Écran tactile 10 pouces, Caméra de recul, Toit ouvrant",
     peinture: "Blanc",
     interieur: "Tissu gris",
-    category: "SUV"
+    category: "SUV",
+    carburant: "Diesel",
+    localisation: "Bamako"
   },
   {
     id: 7,
@@ -134,7 +146,7 @@ export const featuredVehicules: Vehicule[] = [
     annee: 2024,
     type: "Pick-up",
     prix: "120 €/jour",
-    image: "https://www.toyota.com/sites/default/files/hilux-2024.jpg",
+    image: "/images/vehicules/toyota-hilux.jpg",
     description: "Pick-up indestructible pour les chantiers",
     statut: "Disponible",
     service: "Location",
@@ -146,7 +158,9 @@ export const featuredVehicules: Vehicule[] = [
     atouts: "Double cabine, Benne, 4x4, Attelage remorque",
     peinture: "Blanc",
     interieur: "Tissu noir",
-    category: "Utilitaire"
+    category: "Utilitaire",
+    carburant: "Diesel",
+    localisation: "Kayes"
   },
   {
     id: 8,
@@ -155,7 +169,7 @@ export const featuredVehicules: Vehicule[] = [
     annee: 2022,
     type: "Berline",
     prix: "250 €/jour",
-    image: "https://www.mercedes-benz.com/sites/default/files/classe-s-2022.jpg",
+    image: "/images/vehicules/mercedes-classe-s.jpg",
     description: "Berline de luxe pour vos déplacements professionnels",
     statut: "Disponible",
     service: "Location",
@@ -167,6 +181,8 @@ export const featuredVehicules: Vehicule[] = [
     atouts: "Sièges cuir massants, Écrans arrière, Toit panoramique, Mini-bar",
     peinture: "Noir",
     interieur: "Cuir beige",
-    category: "Luxe"
+    category: "Luxe",
+    carburant: "Essence",
+    localisation: "Bamako"
   }
 ];

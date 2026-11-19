@@ -1,3 +1,31 @@
+// Les 3 domaines mis en avant sur la page d'accueil (partagés par les compositions)
+export const domainesAccueil = [
+  {
+    id: 1,
+    titre: "Vente et Achat de Voitures",
+    description:
+      "Nous achetons et vendons une large gamme de véhicules d'occasion de qualité, soigneusement sélectionnés pour répondre à vos besoins.",
+    icone: "directions_car",
+    lien: "/vente",
+  },
+  {
+    id: 2,
+    titre: "Location de Véhicules",
+    description:
+      "Des solutions de location flexibles pour tous vos besoins, que ce soit pour un jour, une semaine ou plus longtemps.",
+    icone: "car_rental",
+    lien: "/location",
+  },
+  {
+    id: 3,
+    titre: "Transit Automobile",
+    description:
+      "Service de transit et d'importation de véhicules, avec une gestion complète des formalités douanières.",
+    icone: "local_shipping",
+    lien: "/transit",
+  },
+];
+
 export const services = [
   {
     id: 1,

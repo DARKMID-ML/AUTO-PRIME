@@ -6,7 +6,9 @@ import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  // `dist` : build de production.
+  // `@/**`  : dossier orphelin (composants shadcn non utilisés, hors de `src/`).
+  globalIgnores(['dist', '@/**']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [

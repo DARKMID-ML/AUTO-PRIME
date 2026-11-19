@@ -1,11 +1,12 @@
 import { type Avis } from "@/types/avis";
+import { SITE } from "@/config/site";
 
 export const temoignages: Avis[] = [
   {
     id: 1,
     nom: "Amadou Diallo",
     email: "amadou.diallo@email.com",
-    message: "Super Auto a rendu l'achat de ma voiture très facile. Équipe professionnelle et service impeccable !",
+    message: `${SITE.nom} a rendu l'achat de ma voiture très facile. Équipe professionnelle et service impeccable !`,
     initiales: "AD"
   },
   {

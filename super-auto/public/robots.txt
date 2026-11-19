@@ -1,0 +1,8 @@
+# AutoPrime — crawl des moteurs de recherche
+# Remplacez la ligne Sitemap par le vrai domaine une fois le site en ligne.
+
+User-agent: *
+Allow: /
+Disallow: /admin
+
+Sitemap: https://www.mon-domaine.fr/sitemap.xml

@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* Colors */
+  /* Colors (overridden by src/config/theme.ts from .env presets) */
   --color-brand-red: #C41E3A;
   --color-brand-red-dark: #9e0027;
   --color-brand-blue: #1E3A8A;
@@ -18,15 +18,42 @@
   --font-heading: 'Epilogue', sans-serif;
   --font-body: 'Inter', sans-serif;
   --font-icons: 'Material Symbols Outlined', sans-serif;
+  --layout-gap: 18px;
+  --template-radius: 18px;
 
   /* Shadows */
   --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
   --shadow-card-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
   --shadow-modal: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 
+  /* Shadows premium (refonte) */
+  --shadow-premium: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+  --shadow-premium-hover: 0 32px 64px -16px rgba(15, 23, 42, 0.35);
+  --shadow-glow-red: 0 10px 30px -10px rgba(196, 30, 58, 0.55);
+
   /* Animations */
   --animate-ken-burns: ken-burns 20s ease-in-out infinite alternate;
   --animate-bounce-slow: bounce-slow 3s ease-in-out infinite;
+  --animate-fade-up: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-in: fade-in 0.6s ease both;
+  --animate-scale-in: scale-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  /* Animations permanentes (en boucle) */
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-float-slow: float 9s ease-in-out infinite;
+  --animate-pulse-glow: pulse-glow 2.8s ease-in-out infinite;
+  --animate-spin-slow: spin-slow 14s linear infinite;
+  --animate-marquee: marquee 30s linear infinite;
+  --animate-gradient-xy: gradient-xy 8s ease infinite;
+  --animate-shimmer: shimmer 4.5s ease-in-out infinite;
+  --animate-shimmer-slow: shimmer 6s ease-in-out infinite;
+  --animate-twinkle: twinkle 2.4s ease-in-out infinite;
+  --animate-marching: marching 1.6s linear infinite;
+  --animate-pulse-dot: pulse-dot 2.2s ease-in-out infinite;
+  --animate-drift: drift 12s ease-in-out infinite;
+  --animate-bob: bob 4s ease-in-out infinite;
+  --animate-line-pulse: line-pulse 2.8s ease-in-out infinite;
+  --animate-soft-glow: soft-glow 4.5s ease-in-out infinite;
 }
 
 @keyframes ken-burns {
@@ -37,6 +64,253 @@
 @keyframes bounce-slow {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(10px); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ---------- Animations permanentes (en boucle) ---------- */
+
+/* Flottement doucement (formes décoratives) */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-22px); }
+}
+
+/* Halo rouge qui pulse (CTA) */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 10px 30px -10px rgba(196, 30, 58, 0.55); }
+  50% { box-shadow: 0 12px 42px -6px rgba(196, 30, 58, 0.95); }
+}
+
+/* Rotation lente (éléments circulaires) */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Défilement horizontal infini (bandeau de marques) */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Dégradé qui se déplace (bannières CTA) */
+@keyframes gradient-xy {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Balayage lumineux (reflet sur les boutons) */
+@keyframes shimmer {
+  0%, 55% { transform: translateX(-160%) skewX(-20deg); }
+  80%, 100% { transform: translateX(260%) skewX(-20deg); }
+}
+
+/* Scintillement (étoiles de notation) */
+@keyframes twinkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.82); }
+}
+
+/* Pointillés qui défilent (ligne de connexion du processus) */
+@keyframes marching {
+  to { background-position: 48px 0; }
+}
+
+/* Point de statut qui palpite (disponibilité, envoi) */
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.55; }
+}
+
+/* Dérive lente en diagonale (formes décoratives larges) */
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(28px, -28px); }
+}
+
+/* Balancement doux (pastilles de processus, icones) */
+@keyframes bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(-4deg); }
+}
+
+/* Pulsation horizontale (traits des kickers, soulignements de titres) */
+@keyframes line-pulse {
+  0%, 100% { transform: scaleX(1); opacity: 1; }
+  50% { transform: scaleX(0.55); opacity: 0.55; }
+}
+
+/* Halo doux qui respire (fonds de sections, chiffres clés) */
+@keyframes soft-glow {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+/* ---------- Refonte premium : utilitaires ---------- */
+
+/* Effet verre dépoli (glassmorphism) */
+.glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.glass-dark {
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Titre en dégradé de la charte */
+.text-gradient-brand {
+  background: linear-gradient(120deg, #ffffff 0%, #ffd9df 45%, #C41E3A 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-gradient-dark {
+  background: linear-gradient(120deg, #1E3A8A 0%, #C41E3A 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Titre en dégradé dont le déplacement est permanent */
+.text-gradient-animated {
+  background: linear-gradient(120deg, #ffffff 0%, #ffd9df 45%, #C41E3A 100%);
+  background-size: 220% 220%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-xy 6s ease infinite;
+}
+
+/* Ligne pointillée dont les traits défilent en continu (processus) */
+.ligne-fluide {
+  background-image: repeating-linear-gradient(90deg, #C41E3A 0 14px, transparent 14px 34px);
+  animation: var(--animate-marching);
+}
+
+/* Balayage lumineux périodique (photos de véhicules, blocs colorés) */
+.card-shine {
+  position: relative;
+  overflow: hidden;
+}
+.card-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.35) 50%, transparent 62%);
+  transform: translateX(-160%);
+  animation: var(--animate-shimmer-slow);
+  pointer-events: none;
+}
+
+/* Bouton premium avec dégradé de la charte + balayage lumineux permanent */
+.btn-premium {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--theme-primary, #C41E3A) 0%, var(--theme-primary-dark, #9e0027) 100%);
+  box-shadow: 0 10px 30px -10px color-mix(in srgb, var(--theme-primary, #C41E3A) 55%, transparent);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+}
+.btn-premium::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: translateX(-160%) skewX(-20deg);
+  animation: var(--animate-shimmer);
+  pointer-events: none;
+}
+.btn-premium:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px -12px rgba(196, 30, 58, 0.65);
+  filter: brightness(1.05);
+}
+
+.btn-ghost {
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+}
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.85);
+  transform: translateY(-2px);
+}
+
+/* Apparition au scroll (pilotée par le composant Reveal) */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Respect des préférences d'accessibilité */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .btn-premium:hover,
+  .btn-ghost:hover {
+    transform: none;
+  }
+  /* Toutes les animations (permanentes ou d'entrée) sont désactivées */
+  .animate-ken-burns,
+  .animate-bounce-slow,
+  .animate-fade-up,
+  .animate-fade-in,
+  .animate-scale-in,
+  .animate-float,
+  .animate-float-slow,
+  .animate-pulse-glow,
+  .animate-spin-slow,
+  .animate-marquee,
+  .animate-gradient-xy,
+  .animate-shimmer,
+  .animate-twinkle,
+  .animate-ping,
+  .animate-marching,
+  .animate-shimmer-slow,
+  .animate-pulse-dot,
+  .animate-drift,
+  .animate-bob,
+  .animate-line-pulse,
+  .animate-soft-glow,
+  .text-gradient-animated,
+  .btn-premium::after,
+  .card-shine::after,
+  .ligne-fluide {
+    animation: none !important;
+  }
 }
 
 #root {
@@ -51,3 +325,193 @@ body {
   margin: 0;
   font-family: var(--font-body);
 }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+/* Exposed layout token gives reusable components a shared spacing scale. */
+[data-layout="compact"] { --layout-gap: 12px; --template-section-space: 3rem; }
+[data-layout="balanced"] { --layout-gap: 18px; --template-section-space: 4rem; }
+[data-layout="spacious"] { --layout-gap: 26px; --template-section-space: 5rem; }
+
+/* The layout preset affects grids and common page section spacing. */
+[class~="gap-6"] { gap: var(--layout-gap); }
+[class~="gap-8"] { gap: calc(var(--layout-gap) * 1.33); }
+.template-section { padding-block: var(--template-section-space); }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   COMPOSITIONS DE SITE (Admin → Apparence du site)
+
+   Trois langages visuels, pas trois couleurs. La composition choisie remplace
+   la barre de navigation, le pied de page et la page d'accueil, et impose sa
+   typographie d'affichage ainsi que ses surfaces.
+     • Signature → showroom nocturne (verre, ombres, arrondis)
+     • Atelier → concession technique (béton, filets d'acier, Barlow, angles vifs)
+     • Catalogue → inventaire (flat, dense, titres condensés, angles nets)
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Décalage du contenu sous la barre de navigation fixe, propre à chaque
+   composition (les barres n'ont pas la même hauteur). */
+.site-nav-offset { padding-top: var(--nav-offset, 8rem); }
+:root[data-site-layout="catalogue"] { --nav-offset: 11.5rem; }
+@media (max-width: 767px) {
+  :root[data-site-layout="catalogue"] { --nav-offset: 9.75rem; }
+}
+
+/* ────────────────────────── Catalogue : inventaire ───────────────────────── */
+:root[data-site-layout="catalogue"] body { background: #ffffff; }
+:root[data-site-layout="catalogue"] h1,
+:root[data-site-layout="catalogue"] h2,
+:root[data-site-layout="catalogue"] h3,
+:root[data-site-layout="catalogue"] h4,
+:root[data-site-layout="catalogue"] h5 {
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.015em;
+  font-weight: 700;
+}
+:root[data-site-layout="catalogue"] .btn-premium {
+  border-radius: 0;
+  box-shadow: none;
+}
+:root[data-site-layout="catalogue"] .btn-premium::after,
+:root[data-site-layout="catalogue"] .card-shine::after {
+  display: none;
+}
+:root[data-site-layout="catalogue"] .shadow-card,
+:root[data-site-layout="catalogue"] .shadow-premium {
+  box-shadow: none;
+}
+
+/* ────────────────────────── Atelier : concession technique ───────────────── */
+/* Les tokens Atelier existent même quand seule la navbar ou le footer est en
+   style Atelier (Admin → Barre de navigation / Pied de page) : ils ne doivent
+   donc pas dépendre de la composition générale. */
+:root {
+  --at-paper: #ece7dd;
+  --at-paper-deep: #e2dccf;
+  --at-ink: #171a1c;
+  --at-steel: #4a555e;
+  --at-line: rgba(23, 26, 28, 0.2);
+  --at-line-soft: rgba(23, 26, 28, 0.075);
+}
+:root[data-site-layout="atelier"] {
+  /* Barre du haut : 4 px de filet rouge + 80 px de barre + 2 px de filet. */
+  --nav-offset: 6rem;
+  /* Des blocs d'atelier : presque carrés, jamais mous. */
+  --template-radius: 4px;
+}
+@media (max-width: 767px) {
+  :root[data-site-layout="atelier"] { --nav-offset: 5.5rem; }
+}
+/* Tablette : même barre compacte que sur mobile. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  :root[data-site-layout="atelier"] { --nav-offset: 5.5rem; }
+}
+:root[data-site-layout="atelier"] body {
+  background-color: var(--at-paper);
+  /* Grille de béton : le plan de l'atelier, pas une décoration. */
+  background-image:
+    linear-gradient(to right, var(--at-line-soft) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--at-line-soft) 1px, transparent 1px);
+  background-size: 48px 48px;
+  color: var(--at-ink);
+}
+:root[data-site-layout="atelier"] h1,
+:root[data-site-layout="atelier"] h2,
+:root[data-site-layout="atelier"] h3,
+:root[data-site-layout="atelier"] h4,
+:root[data-site-layout="atelier"] h5 {
+  font-family: 'Barlow', 'Arial Narrow', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+/* Aucune ombre : la hiérarchie passe par les filets et les surfaces. */
+:root[data-site-layout="atelier"] .shadow-card,
+:root[data-site-layout="atelier"] .shadow-card-hover,
+:root[data-site-layout="atelier"] .shadow-premium,
+:root[data-site-layout="atelier"] .shadow-modal,
+:root[data-site-layout="atelier"] .shadow-md {
+  box-shadow: none;
+}
+:root[data-site-layout="atelier"] .glass,
+:root[data-site-layout="atelier"] .glass-dark {
+  background: var(--at-paper);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-color: var(--at-line);
+}
+:root[data-site-layout="atelier"] .btn-premium {
+  background: var(--at-ink);
+  border-radius: 2px;
+  box-shadow: none;
+}
+:root[data-site-layout="atelier"] .btn-premium::after,
+:root[data-site-layout="atelier"] .card-shine::after {
+  display: none;
+}
+:root[data-site-layout="atelier"] .text-gradient-animated,
+:root[data-site-layout="atelier"] .text-gradient-brand {
+  background: none;
+  color: var(--at-ink);
+  -webkit-text-fill-color: currentColor;
+  animation: none;
+}
+:root[data-site-layout="atelier"] .bg-brand-light,
+:root[data-site-layout="atelier"] .bg-brand-surface {
+  background-color: var(--at-paper);
+}
+:root[data-site-layout="atelier"] .border-border-light,
+:root[data-site-layout="atelier"] .border-border-standard {
+  border-color: var(--at-line);
+}
+:root[data-site-layout="atelier"] input,
+:root[data-site-layout="atelier"] select,
+:root[data-site-layout="atelier"] textarea {
+  border-radius: 2px;
+  border-color: var(--at-line);
+  background-color: #fff;
+}
+:root[data-site-layout="atelier"] button.rounded-full,
+:root[data-site-layout="atelier"] a.rounded-full {
+  border-radius: 2px;
+}
+
+/* ───────────── Pages intérieures : en-têtes et surfaces ─────────────────────
+   L'en-tête est un composant unique (`PageHeader`) qui compose son propre
+   markup selon la composition active : plus aucune surcharge `!important`
+   d'un hero hérité, donc plus de titre noir sur fond sombre ni de bandeau
+   vide à la place d'une image. Ici on ne règle que les surfaces communes. */
+
+/* Inventaire : aucune courbe, aucun relief. Les surfaces colorées deviennent
+   un gris de rayon, les ombres disparaissent. */
+:root[data-site-layout="catalogue"] {
+  --template-radius: 0px;
+}
+:root[data-site-layout="catalogue"] .bg-brand-light {
+  background-color: #f4f4f3;
+}
+:root[data-site-layout="catalogue"] .shadow-card,
+:root[data-site-layout="catalogue"] .shadow-card-hover,
+:root[data-site-layout="catalogue"] .shadow-premium {
+  box-shadow: none;
+}
+
+/* Shared radius token also overrides Tailwind's common component radii. */
+.rounded-template,
+.rounded-lg,
+.rounded-xl,
+.rounded-2xl,
+.rounded-3xl { border-radius: var(--template-radius); }
+
+/* Global radius switch: rounded (default), soft, or sharp. */
+:root[data-radius="soft"] { --template-radius: 8px; }
+:root[data-radius="sharp"] { --template-radius: 2px; }
+:root:not([data-radius]), :root[data-radius="rounded"] { --template-radius: 18px; }
+
+/* La composition a le dernier mot sur le rayon : le réglage « Arrondi » de
+   l'administration ne concerne que la composition Signature. Un atelier et un
+   inventaire ne s'arrondissent pas, même si l'admin a choisi « rounded ». */
+:root[data-site-layout="catalogue"] { --template-radius: 0px; }
+:root[data-site-layout="atelier"] { --template-radius: 4px; }
