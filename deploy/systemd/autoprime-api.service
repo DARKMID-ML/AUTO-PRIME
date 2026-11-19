@@ -1,0 +1,36 @@
+[Unit]
+Description=AutoPrime API (Spring Boot)
+Documentation=file:/opt/autoprime/README
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=autoprime
+Group=autoprime
+WorkingDirectory=/opt/autoprime
+
+# Secrets et configuration (chmod 600, root:root)
+EnvironmentFile=/etc/autoprime/api.env
+
+ExecStart=/usr/bin/java -Xms128m -Xmx512m -XX:+UseSerialGC -jar /opt/autoprime/super-auto-api.jar --spring.profiles.active=prod
+
+Restart=on-failure
+RestartSec=5
+SuccessExitStatus=143
+TimeoutStopSec=30
+
+# Durcissement
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+ReadWritePaths=/var/lib/autoprime
+
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

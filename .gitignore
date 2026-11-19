@@ -16,6 +16,11 @@ super-auto-api/src/main/resources/application-prod.properties
 
 # ── Outils internes / métadonnées locaux ──────────────────────
 .freebuff/
+.agents/
+
+# ── Sauvegardes et captures locales ───────────────────────────
+.saas-backup/
+screenshots/
 
 # ── Build / dépendances ───────────────────────────────────────
 node_modules/

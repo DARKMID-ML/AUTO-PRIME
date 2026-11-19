@@ -113,7 +113,7 @@ SUPER-AUTO/
 │       │
 │       ├── components/                 # Composants réutilisables
 │       │   ├── Navbar.tsx / Footer.tsx # Sélecteurs de variante selon le layout
-│       │   ├── navbars/  footers/      # Variantes Signature, Editorial, Catalogue
+│       │   ├── navbars/  footers/      # Variantes Signature, Atelier, Catalogue
 │       │   ├── VehicleCard.tsx / VehicleModal.tsx
 │       │   ├── PageHeader.tsx / SectionTitle.tsx / Reveal.tsx
 │       │   ├── DemandeModal.tsx / SinistreModal.tsx
@@ -122,7 +122,7 @@ SUPER-AUTO/
 │       ├── pages/                      # Pages publiques
 │       │   ├── Acceuil.tsx  Vente.tsx  Location.tsx  Transit.tsx
 │       │   ├── Services.tsx  Contact.tsx  MesDemandes.tsx  VehiculeDetails.tsx
-│       │   ├── home/                   # 3 variantes d'accueil (Signature, Editorial, Catalogue)
+│       │   ├── home/                   # 3 variantes d'accueil (Signature, Atelier, Catalogue)
 │       │   └── admin/                  # Espace admin (dashboard, CRUD, messages, devis…)
 │       │
 │       ├── data/                       # Données statiques (repli hors ligne + seed)
@@ -143,7 +143,7 @@ SUPER-AUTO/
 
 | Composant | Fichier | Rôle | Statut |
 |-----------|---------|------|--------|
-| `Navbar` | `components/Navbar.tsx` (+ `navbars/`) | Navigation sticky + menu mobile ; 3 variantes Signature / Editorial / Catalogue selon le layout | Terminé, intégré |
+| `Navbar` | `components/Navbar.tsx` (+ `navbars/`) | Navigation sticky + menu mobile ; 3 variantes Signature / Atelier / Catalogue selon le layout | Terminé, intégré |
 | `Footer` | `components/Footer.tsx` (+ `footers/`) | Pied de page ; 3 variantes selon le layout | Terminé, intégré |
 | `VehicleCard` | `components/VehicleCard.tsx` | Carte véhicule (image + badge + infos) | Intégré (Vente, Location, accueil, détails, admin) |
 | `SectionTitle` | `components/SectionTitle.tsx` | Titre centré de section | Intégré (ex. HomeSignature) |

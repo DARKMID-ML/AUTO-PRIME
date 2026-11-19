@@ -107,7 +107,7 @@ Les routes sont déclarées dans `src/App.tsx`. La Navbar (`src/components/Navba
 3. **Formulaire Transit** : ✅ branché → `POST /api/devis-transit` (via `apiSend`).
 4. **Formulaire Contact** : ✅ branché → `POST /api/contact` (Formspree retiré, repli conservé dans `SITE.formspreeContact`).
 5. **`src/pages/Transite.tsx`** : ✅ supprimé — remplacé par `Transit.tsx`.
-6. **Accueil** : ✅ 3 variantes complètes construites (`HomeSignature` par défaut, `HomeEditorial`, `HomeCatalogue`) commutées par `useSiteLayout`.
+6. **Accueil** : ✅ 3 variantes complètes construites (`HomeSignature` par défaut, `HomeAtelier`, `HomeCatalogue`) commutées par `useSiteLayout`.
 7. **Thème sombre** et vues grille/liste (boutons visuels) non fonctionnels — optionnels selon le cahier.
 8. **Données admin** : véhicules, messages et devis sont **branchés à l'API** (miroir localStorage conservé hors ligne). Restent en localStorage : demandes location/essai/sinistres (`sa:demandes`), flotte/locations (`admin:locations`, `admin:flotte`), apparence/contenu du site. Les justificatifs joints sont des noms de fichiers/liens, pas des uploads.
 9. **Auth admin** : ✅ — `/admin/connexion` + `AuthFilter` côté API (jeton Bearer, session 12 h, rôles admin/dev). La page « Suivi client » reste volontairement publique.

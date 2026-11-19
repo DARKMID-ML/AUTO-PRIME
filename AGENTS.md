@@ -78,7 +78,7 @@ AutoPrime/
 │   │   ├── components/           # Navbar, Footer, VehicleCard + variants navbars/ & footers/
 │   │   ├── pages/                # Pages publiques (Acceuil, Vente, Location, Transit, Services, Contact, MesDemandes, VehiculeDetails)
 │   │   ├── pages/admin/          # Espace admin (dashboard, CRUD, messages, devis, demande…)
-│   │   ├── pages/home/           # 3 variantes d'accueil (HomeSignature, HomeEditorial, HomeCatalogue)
+│   │   ├── pages/home/           # 3 variantes d'accueil (HomeSignature, HomeAtelier, HomeCatalogue)
 │   │   ├── config/               # ⭐ site.ts, api.ts, auth.ts, theme.ts… (config unique)
 │   │   ├── data/                 # Données statiques (repli hors ligne)
 │   │   ├── hooks/                # useVehicules, useMessages, useDevis, useAdminVehicules…
