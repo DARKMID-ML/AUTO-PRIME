@@ -385,7 +385,7 @@ import { Link } from 'react-router-dom'
 ```tsx
 import { Link } from 'react-router-dom'    // ← Importer Link
 import { useState, useEffect } from 'react'
-import superlogo from '../assets/logo_super_Auto.png'
+import superlogo from '../assets/logo.png'
 
 export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -420,7 +420,7 @@ export default function Navbar() {
                     <div className="flex-shrink-0">
                         <img
                             src={superlogo}
-                            alt="Logo Super Auto"
+                            alt="Logo AutoPrime"
                             className="h-12 w-auto object-contain"
                         />
                     </div>
@@ -488,7 +488,7 @@ export default function Navbar() {
 
 ```tsx
 import { Link } from 'react-router-dom'
-import superlogo from '../assets/logo_super_Auto.png'
+import superlogo from '../assets/logo.png'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
@@ -509,7 +509,7 @@ export default function Footer() {
           <div>
             <img
               src={superlogo}
-              alt="Logo Super Auto"
+              alt="Logo AutoPrime"
               className="h-12 w-auto object-contain rounded mb-4"
             />
             <p className="text-gray-300 text-sm mb-4">
@@ -517,7 +517,7 @@ export default function Footer() {
               Vente, location et transit de véhicules premium.
             </p>
             <p className="text-gray-400 text-sm">
-              © {currentYear} Super Auto Badéma Sylla. Tous droits réservés.
+              © {currentYear} AutoPrime. Tous droits réservés.
             </p>
           </div>
 
@@ -564,10 +564,10 @@ export default function Footer() {
                   email
                 </span>
                 <a
-                  href="mailto:contact@superauto-mali.com"
+                  href="mailto:contact@autoprime.com"
                   className="text-gray-300 hover:text-white transition-colors text-sm"
                 >
-                  contact@superauto-mali.com
+                  contact@autoprime.com
                 </a>
               </li>
             </ul>
@@ -730,9 +730,9 @@ export default function Contacte() {
                             </span>
                             <div>
                                 <h3 className="font-bold text-text-primary">Email</h3>
-                                <a href="mailto:contact@superauto-mali.com"
+                                <a href="mailto:contact@autoprime.com"
                                    className="text-brand-red hover:text-brand-red-dark transition-colors">
-                                    contact@superauto-mali.com
+                                    contact@autoprime.com
                                 </a>
                             </div>
                         </div>

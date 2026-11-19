@@ -1,0 +1,30 @@
+# ── Secrets / config locale ───────────────────────────────────
+.env
+*.env.local
+# Identifiants du compte technique (DEV_IDENTIFIANT / DEV_MOT_DE_PASSE)
+super-auto-api/src/main/resources/application-prod.properties
+
+# ── Bases de données locales ──────────────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+
+# ── Dossiers IDE / éditeurs ───────────────────────────────────
+.idea/
+.vscode/
+*.iml
+
+# ── Outils internes / métadonnées locaux ──────────────────────
+.freebuff/
+
+# ── Build / dépendances ───────────────────────────────────────
+node_modules/
+dist/
+dist-ssr/
+target/
+.pnpm-store/
+*.log
+
+# ── OS ────────────────────────────────────────────────────────
+.DS_Store
+.aider*

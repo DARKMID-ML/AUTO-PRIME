@@ -1,4 +1,4 @@
-# Charte graphique — Super Auto Badéma Sylla
+# Charte graphique — AutoPrime
 
 > Guide visuel complet : couleurs, typographie, ombres, animations et breakpoints.
 > Dernière mise à jour : Juillet 2026
@@ -176,4 +176,4 @@
 
 ---
 
-*Charte graphique — Super Auto Badéma Sylla — Version 1.0*
+*Charte graphique — AutoPrime — Version 1.0*

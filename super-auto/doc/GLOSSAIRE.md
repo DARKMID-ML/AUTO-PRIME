@@ -1,4 +1,4 @@
-# Glossaire — Super Auto Badéma Sylla
+# Glossaire — AutoPrime
 
 > Termes techniques expliqués simplement. Pour les débutants en React et en développement web.
 > Dernière mise à jour : Juillet 2026
@@ -103,4 +103,4 @@
 
 ---
 
-*Glossaire — Super Auto Badéma Sylla — Version 1.0*
+*Glossaire — AutoPrime — Version 1.0*

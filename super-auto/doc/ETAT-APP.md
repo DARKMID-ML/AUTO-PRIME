@@ -1,7 +1,45 @@
-# État de l'application — Super Auto Badéma Sylla
+# État de l'application — AutoPrime
 
 > Rapport sur l'avancement du projet : ce qui est fait, en cours, et pas encore commencé.
-> Dernière mise à jour : Juillet 2026
+> Dernière mise à jour : Octobre 2026
+
+---
+
+## ⚡ Nouveautés Octobre 2026
+
+| Innovation | Statut | Détail |
+|-----------|--------|--------|
+| API REST complète | ✅ Terminé | 5 contrôleurs (`/api/vehicules`, `/api/contact`, `/api/devis-transit`, `/api/services`, `/api/avis`) + services métier + seed automatique |
+| Branchement front ↔ API | ✅ Terminé | `src/config/api.ts` + hook `useVehicules` (repli local si serveur éteint) |
+| Admin ↔ API (véhicules) | ✅ Terminé | Hook CRUD `useAdminVehicules` : créer/modifier/supprimer depuis l'admin se répercute immédiatement sur le site public ; badge Serveur/Local ; miroir localStorage conservé hors ligne |
+| Formulaires publics → API | ✅ Terminé | Contact → `POST /api/contact` (remplace Formspree), Transit → `POST /api/devis-transit` ; confirmations et messages d'erreur gérés |
+| Boîtes admin ← API | ✅ Terminé | Hooks `useMessages` / `useDevis` : lecture, changement de statut (PATCH) et suppression (DELETE) directement en base ; badge Serveur/Local |
+| Authentification 3 rôles | ✅ Terminé | Site public libre ; connexion admin (`/admin/connexion`) ; rôle **admin** = contenu, rôle **dev** = contenu + informations entreprise + design. Jeton Bearer contrôlé par l'API (`AuthFilter`) |
+| Mise en ligne | ✅ Prêt | Profil `prod` Spring Boot, build front en même origine, config nginx + systemd + sauvegardes + guide pas à pas dans `deploy/` |
+| Photos réelles | ✅ Terminé | 11 photos libres (Wikimedia) dans `public/images/vehicules/` — plus aucune URL externe inventée |
+| Compteur d'avancement | — | Site public + admin complet ; voir Roadmap pour les finitions |
+
+---
+
+## 🔐 Accès à l'administration (3 rôles)
+
+| Rôle | Identifiant par défaut | Mot de passe par défaut | Accès |
+|------|------------------------|------------------------|-------|
+| **Visiteur (client)** | — | — | Tout le site public, formulaires contact/devis |
+| **Administrateur** | `admin` | `AutoPrime2026` | Tableau de bord, véhicules, location, demandes, messages, devis, services |
+| **Développeur** | `dev` | `AutoPrime2026Dev` | Tout l'admin + Apparence du site + Informations de l'entreprise + Contenu du site |
+
+- Page de connexion : **`/admin/connexion`** (toute visite de `/admin` sans session y redirige).
+- Le jeton est stocké dans `localStorage` (`admin:session`) et envoyé en `Authorization: Bearer …`.
+- Toutes les lectures sensibles (messages, devis) et toutes les écritures sont refusées sans jeton (401 JSON).
+- Les écrans design/infos sont masqués pour l'admin et une URL directe (`/admin/apparence`) le renvoie au tableau de bord.
+- Session valable **12 h** ; un redémarrage de l'API déconnecte tout le monde.
+
+**Changer les identifiants avant la mise en ligne** dans `super-auto-api/src/main/resources/application.properties`, ou par variables d'environnement :
+
+```bash
+ADMIN_IDENTIFIANT=... ADMIN_MOT_DE_PASSE=... DEV_IDENTIFIANT=... DEV_MOT_DE_PASSE=...
+```
 
 ---
 
@@ -98,7 +136,7 @@
 | URLs d'images véhicules fausses | Haute | Les images dans `vehicle.ts` sont des URLs externes inventées |
 | Pas d'images dans `public/` | Haute | Les images spécifiées dans le cahier des charges ne sont pas encore ajoutées |
 | Fichiers non utilisés | Moyenne | `VehicleCard.tsx`, `SectionTitle.tsx`, `data/services.ts`, `data/testimonials.ts` existent mais ne sont pas importés |
-| Favicon bascule | Basse | Le favicon utilise le logo Super Auto (ok) |
+| Favicon bascule | Basse | Le favicon utilise le logo AutoPrime (ok) |
 | Page `Acceuil.tsx` mal orthographié | Basse | Devrait être `Accueil.tsx` |
 | Page `Contacte.tsx` mal orthographié | Basse | Devrait être `Contact.tsx` |
 
@@ -129,10 +167,28 @@
 
 ### Déploiement
 
-- [ ] Configuration déploiement (Netlify/Vercel)
-- [ ] Redirections SPA
-- [ ] Variables d'environnement
+- [x] Configuration production : profil `prod` Spring Boot (`application-prod.properties` — secrets obligatoires, base hors dossier applicatif, erreurs serveur masquées)
+- [x] Build front « même origine » : `pnpm build:prod` (`VITE_API_URL=/`) → le navigateur appelle `/api/...` sur le domaine du site, plus aucun CORS à configurer
+- [x] Fichiers de déploiement dans `deploy/` : `nginx/autoprime.conf` (cache, compression, en-têtes de sécurité, limitation des connexions admin), `systemd/autoprime-api.service` (redémarrage auto, durcissement), `autoprime.env.example` (secrets)
+- [x] Sauvegardes automatiques : `deploy/backup-autoprime.sh` (SQLite + images, rotation 30 jours)
+- [x] Mise à jour en 1 commande : `deploy/maj-autoprime.sh user@domaine`
+- [x] Guide pas à pas : `deploy/README-DEPLOIEMENT.md` (serveur → build → API → nginx → HTTPS → pare-feu → sauvegardes)
+- [ ] Nom de domaine + VPS chez le client (DNS, HTTPS certbot, pare-feu)
+- [ ] Renseigner les vraies coordonnées dans `super-auto/.env` (téléphone, WhatsApp, email, adresse)
 
 ---
 
-*État de l'application — Super Auto Badéma Sylla — Version 1.0*
+## 6. Fichiers de déploiement
+
+| Fichier | Rôle |
+|---------|------|
+| `deploy/README-DEPLOIEMENT.md` | Guide complet, 8 étapes + checklist + dépannage |
+| `deploy/nginx/autoprime.conf` | Configuration nginx (site + proxy API) |
+| `deploy/systemd/autoprime-api.service` | Service systemd de l'API |
+| `deploy/autoprime.env.example` | Modèle de fichier de secrets (`chmod 600`) |
+| `deploy/backup-autoprime.sh` | Sauvegarde base + images |
+| `deploy/maj-autoprime.sh` | Rebuild + envoi + redémarrage |
+
+---
+
+*État de l'application — AutoPrime — Version 1.0*

@@ -55,8 +55,8 @@ Au début du fichier, tu as besoin de :
 - Balise `<section>` avec `h-screen` (pleine hauteur)
 - Image de fond `/hero.png` avec dégradé bleu foncé transparent
 - Contenu centré :
-  - Titre "SUPER AUTO\nBADEMA SYLLA" en très gros
-  - Slogan : "Votre partenaire automobile au Mali depuis plus de 15 ans..."
+  - Titre avec le nom de l'entreprise (`SITE.nom` / `SITE.nomLong`, jamais en dur) en très gros
+  - Slogan : `SITE.slogan` (« Votre partenaire automobile depuis … »)
   - 2 boutons : "VOIR NOS VÉHICULES" (rouge) et "NOUS APPELER" (bordure blanche)
 - Flèche animée en bas pour scroller
 

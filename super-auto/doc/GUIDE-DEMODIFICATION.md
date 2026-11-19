@@ -1,4 +1,4 @@
-# Guide de modification — Super Auto Badéma Sylla
+# Guide de modification — AutoPrime
 
 > Scénarios "Je veux..." pour modifier le projet. Chaque scénario explique quoi faire, où faire, et comment vérifier.
 > Dernière mise à jour : Juillet 2026
@@ -310,4 +310,4 @@ export default function App() {
 
 ---
 
-*Guide de modification — Super Auto Badéma Sylla — Version 1.0*
+*Guide de modification — AutoPrime — Version 1.0*

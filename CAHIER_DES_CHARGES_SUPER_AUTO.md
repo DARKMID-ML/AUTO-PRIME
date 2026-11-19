@@ -1,9 +1,9 @@
-# 📋 CAHIER DES CHARGES — SUPER AUTO BADEMA SYLLA
+# 📋 CAHIER DES CHARGES — AUTOPRIME
 
 **Version :** 2.0  
 **Date :** 01 Juillet 2026  
 **Projet :** Site web vitrine + catalogue automobile + Backend  
-**Client :** Super Auto Badéma Sylla (Bamako, Mali)  
+**Client :** AutoPrime (Bamako, Mali)  
 **Destiné à :** Développeur web (réalisation from scratch)
 
 ---
@@ -12,7 +12,7 @@
 
 ### 1.1 Contexte
 
-**Super Auto Badéma Sylla** est une entreprise automobile basée à **Bamako (Mali)** avec plus de **15 ans d'expérience** dans le secteur. Elle propose une gamme complète de services :
+**AutoPrime** est une entreprise automobile basée à **Bamako (Mali)** avec plus de **15 ans d'expérience** dans le secteur. Elle propose une gamme complète de services :
 
 - **Vente** de véhicules neufs et d'occasion
 - **Location** de véhicules (courte et longue durée)
@@ -25,7 +25,7 @@
 
 | Objectif | Description |
 |----------|-------------|
-| Présenter l'entreprise | Mettre en avant l'expertise, les valeurs et la crédibilité de Super Auto |
+| Présenter l'entreprise | Mettre en avant l'expertise, les valeurs et la crédibilité de AutoPrime |
 | Exposer un catalogue | Afficher les véhicules disponibles à la vente et à la location avec photos et détails |
 | Faciliter la recherche | Permettre aux visiteurs de filtrer et trier les véhicules selon leurs critères |
 | Générer des leads | Capturer les demandes de devis et les contacts via des formulaires |
@@ -70,7 +70,7 @@
 ### 2.1 Frontend (Site public)
 
 ```
-SUPER AUTO BADEMA SYLLA
+AUTOPRIME
 │
 ├── ACCUEIL (/)
 │   ├── Hero Section (image pleine largeur + titre + CTA)
@@ -116,7 +116,7 @@ SUPER AUTO BADEMA SYLLA
 ### 2.2 Backend (API + Administration)
 
 ```
-BACKEND SUPER AUTO
+BACKEND AUTOPRIME
 │
 ├── API REST
 │   ├── GET /api/vehicles          # Liste des véhicules (avec filtres)
@@ -162,7 +162,7 @@ BACKEND SUPER AUTO
 - Image de fond pleine largeur représentant le showroom ou des véhicules de prestige
 - L'image doit avoir un léger zoom animé au fil du temps (effet Ken Burns)
 - Overlay sombre dégradé (du bleu foncé vers la transparence) pour la lisibilité du texte
-- Titre principal : "SUPER AUTO BADEMA SYLLA" en gros caractères blancs, typographie différenciée
+- Titre principal : "AUTOPRIME" en gros caractères blancs, typographie différenciée
 - Sous-titre : "Votre partenaire automobile au Mali depuis plus de 15 ans. Vente, location et transit de véhicules premium."
 - Deux boutons d'action :
   - "VOIR NOS VÉHICULES" → redirige vers la page Vente (bouton primaire rouge)
@@ -359,7 +359,7 @@ BACKEND SUPER AUTO
 - Carte des informations de contact :
   - **Adresse** : ACI 2000, Bamako, Mali (avec icône localisation)
   - **Téléphone** : +223 20 22 XX XX / +223 74 XX XX XX (avec icône téléphone)
-  - **Email** : contact@superauto-mali.com (avec icône email)
+  - **Email** : contact@autoprime.com (avec icône email)
   - **Horaires** : Lun-Ven 08:00-18:00, Sam 09:00-15:00, Dim Fermé (avec icône horloge)
 
 #### Carte
@@ -379,7 +379,7 @@ BACKEND SUPER AUTO
 ### 3.8 Pied de Page (Footer)
 
 - 4 colonnes :
-  1. **Logo + Description** : nom de l'entreprise, courte description, copyright "© 2024 Super Auto Badéma Sylla"
+  1. **Logo + Description** : nom de l'entreprise, courte description, copyright "© 2024 AutoPrime"
   2. **Liens Rapides** : Accueil, Vente, Location, Transit, Services
   3. **Nous Contacter** : adresse, téléphone, email (avec icônes rouges)
   4. **Horaires** : Lun-Ven, Samedi, Dimanche
@@ -572,8 +572,8 @@ Le backend a pour but de :
 
 **Notifications automatiques :**
 /
-0- À chaque nouveau message de contact → email à `contact@superauto-mali.com`
-- À chaque nouvelle demande de devis → email à `contact@superauto-mali.com`
+0- À chaque nouveau message de contact → email à `contact@autoprime.com`
+- À chaque nouvelle demande de devis → email à `contact@autoprime.com`
 - Email de confirmation au visiteur (optionnel)
 
 **Contenu des emails :**
@@ -771,4 +771,4 @@ Chaque véhicule est représenté par un objet avec les champs suivants :
 
 ---
 
-*Document de spécification — Super Auto Badéma Sylla — Version 2.0*
+*Document de spécification — AutoPrime — Version 2.0*

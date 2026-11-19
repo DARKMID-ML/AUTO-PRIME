@@ -1,6 +1,6 @@
 # AGENTS.md — Instructions pour assistants IA
 
-> Ce document guide les assistants IA (opencode, Copilot, etc.) pour travailler efficacement sur le projet Super Auto.
+> Ce document guide les assistants IA (opencode, Copilot, etc.) pour travailler efficacement sur le projet AutoPrime.
 
 ---
 
@@ -13,8 +13,28 @@
 | `pnpm build` | Build de production (tsc + vite build) |
 | `pnpm lint` | Vérifier le code avec ESLint |
 | `pnpm preview` | Prévisualiser le build de production |
+| `pnpm exa:search "…"` | Recherche web via Exa (`EXA_API_KEY` dans `super-auto/.env`) |
 
-**Toutes les commandes doivent être lancées depuis `super-auto/`.**
+**Toutes les commandes front doivent être lancées depuis `super-auto/`.**
+
+**Backend** (depuis `super-auto-api/`, requis JDK 17+) :
+
+| Commande | Rôle |
+|----------|------|
+| `./mvnw spring-boot:run` | Lancer l'API (port 8080, SQLite `super-auto.db`) |
+| `./mvnw test` | Lancer les tests |
+| `./mvnw package` | Build du jar |
+
+> Le front fonctionne aussi **sans backend** : les hooks (`useVehicules`, `useMessages`, `useDevis`, `useAdminVehicules`) replient sur les données locales / localStorage si l'API est éteinte.
+
+---
+
+## Fichiers à ne jamais pousser
+
+Le `.gitignore` **racine** exclut : `.env`, `*.db` (`super-auto.db`), `.idea/`, `.vscode/`, `.freebuff/`, `node_modules/`, `dist/`, `target/`, `*.log`.
+
+- `super-auto/.env.example` est le modèle à versionner ; `super-auto/.env` reste local (config `VITE_*` par client).
+- Ne jamais forcer l'ajout de ces fichiers (`git add -f`).
 
 ---
 
@@ -23,7 +43,7 @@
 | Élément | Convention | Exemple |
 |---------|-----------|---------|
 | Composants React | PascalCase, `.tsx` | `VehicleCard.tsx` |
-| Pages | PascalCase, `.tsx` | `Acceuil.tsx`, `Contacte.tsx` |
+| Pages | PascalCase, `.tsx` | `Acceuil.tsx`, `Contact.tsx` |
 | Hooks | camelCase, `use` prefix | `use-mobile.ts` |
 | Types/Interfaces | PascalCase | `Vehicule`, `Avis` |
 | Variables/fonctions | camelCase | `handleSubmit`, `isMenuOpen` |
@@ -47,19 +67,34 @@
 ## Structure du projet
 
 ```
-super-auto/
-├── src/
-│   ├── components/     # Composants réutilisables (Navbar, Footer, VehicleCard)
-│   ├── pages/          # Pages du site (Acceuil, Contacte, etc.)
-│   ├── data/           # Données statiques (véhicules, services, témoignages)
-│   ├── types/          # Interfaces TypeScript
-│   ├── assets/         # Images importées par le code
-│   ├── App.tsx         # Routes
-│   ├── main.tsx        # Point d'entrée
-│   └── index.css       # Thème Tailwind (couleurs custom)
-├── public/             # Assets statiques (logo, favicon)
-├── doc/                # Documentation
-└── index.html          # HTML entry point
+AutoPrime/
+├── .gitignore                    # Racine : fichiers à ne jamais pousser
+├── AGENTS.md                     # Ce fichier
+├── README.md                     # Point d'entrée documentation
+├── CAHIER_DES_CHARGES_SUPER_AUTO.md
+│
+├── super-auto/                   # Front React
+│   ├── src/
+│   │   ├── components/           # Navbar, Footer, VehicleCard + variants navbars/ & footers/
+│   │   ├── pages/                # Pages publiques (Acceuil, Vente, Location, Transit, Services, Contact, MesDemandes, VehiculeDetails)
+│   │   ├── pages/admin/          # Espace admin (dashboard, CRUD, messages, devis, demande…)
+│   │   ├── pages/home/           # 3 variantes d'accueil (HomeSignature, HomeEditorial, HomeCatalogue)
+│   │   ├── config/               # ⭐ site.ts, api.ts, auth.ts, theme.ts… (config unique)
+│   │   ├── data/                 # Données statiques (repli hors ligne)
+│   │   ├── hooks/                # useVehicules, useMessages, useDevis, useAdminVehicules…
+│   │   ├── store/                # demandes (persistance localStorage)
+│   │   ├── types/  utils/        # Interfaces TypeScript + helpers
+│   │   ├── App.tsx               # Routes
+│   │   ├── main.tsx              # Point d'entrée
+│   │   └── index.css             # Thème Tailwind (couleurs custom)
+│   ├── public/                   # Assets statiques (logo, images/vehicules/)
+│   ├── doc/                      # Documentation
+│   └── index.html                # HTML entry point
+│
+└── super-auto-api/               # Backend Spring Boot 3 + SQLite
+    ├── mvnw                      # Maven wrapper
+    ├── pom.xml
+    └── src/main/java/com/superauto/   # controllers, services, entities, dto, mapper…
 ```
 
 ---
@@ -79,11 +114,15 @@ super-auto/
 
 ## Fichiers de données
 
-Les données statiques sont dans `src/data/`. Quand le backend sera prêt, ces fichiers seront remplacés par des appels API.
+Les données statiques sont dans `super-auto/src/data/` — elles servent de **repli hors ligne** et de seed du backend (`DataSeeder`) :
 
-- `vehicle.ts` — Liste des véhicules (vente + location)
+- `vehicle.ts` — 8 véhicules (5 Vente, 3 Location), images locales `public/images/vehicules/`
 - `services.ts` — Domaines d'expertise + valeurs
-- `testimonials.ts` — Témoignages clients
+- `testimonials.ts` — Témoignages clients (avis)
+- `location.ts` — Flotte/locations (admin)
+- `inbox.ts` — Boîte de réception (admin)
+
+La source de vérité est désormais l'API : `GET/POST/PUT/DELETE /api/vehicules`, `/api/contact`, `/api/devis-transit`, `/api/services`, `/api/avis`, `/api/auth` (voir `super-auto-api/GUIDE.md`).
 
 ---
 
@@ -93,4 +132,4 @@ Le fichier `CAHIER_DES_CHARGES_SUPER_AUTO.md` (racine) contient toutes les spéc
 
 ---
 
-*Dernière mise à jour : Juillet 2026*
+*Dernière mise à jour : Octobre 2026*

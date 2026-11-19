@@ -1,4 +1,4 @@
-# Roadmap — Super Auto Badéma Sylla
+# Roadmap — AutoPrime
 
 > Feuille de route du projet avec les phases de développement et priorités.
 > Dernière mise à jour : Juillet 2026
@@ -125,4 +125,4 @@
 
 ---
 
-*Roadmap — Super Auto Badéma Sylla — Version 1.0*
+*Roadmap — AutoPrime — Version 1.0*

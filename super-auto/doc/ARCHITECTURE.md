@@ -1,6 +1,6 @@
-# Architecture technique — Super Auto Badéma Sylla
+# Architecture technique — AutoPrime
 
-> Document d'architecture détaillé pour le projet Super Auto.
+> Document d'architecture détaillé pour le projet AutoPrime.
 > Dernière mise à jour : Juillet 2026
 
 ---
@@ -322,4 +322,4 @@ Frontend (React)  ──── fetch() ────▶  API (Express)
 
 ---
 
-*Architecture Super Auto Badéma Sylla — Version 1.0*
+*Architecture AutoPrime — Version 1.0*

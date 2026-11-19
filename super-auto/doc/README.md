@@ -1,13 +1,13 @@
-# Super Auto Badéma Sylla — Documentation
+# AutoPrime — Documentation
 
-> Documentation complète du projet **Super Auto Badéma Sylla** — Site web vitrine + catalogue automobile.
-> Dernière mise à jour : Juillet 2026
+> Documentation complète du projet **AutoPrime** — Site web vitrine + catalogue automobile.
+> Dernière mise à jour : Octobre 2026
 
 ---
 
 ## 1. Vue d'ensemble
 
-**Super Auto Badéma Sylla** est une entreprise automobile basée à **Bamako, Mali** avec plus de 15 ans d'expérience. Le site web doit présenter :
+**AutoPrime** est une entreprise automobile basée à **Bamako, Mali** avec plus de 15 ans d'expérience. Le site web doit présenter :
 
 - Un catalogue de véhicules (vente et location)
 - Des services (transit, entretien, pièces détachées)
@@ -24,8 +24,8 @@
 | Frontend | React 19 + TypeScript + Vite |
 | Styling | Tailwind CSS 4 |
 | Routing | React Router DOM 7 |
-| Pages | 6 (Accueil, Vente, Location, Transit, Services, Contact) |
-| Backend | Futur (Node.js + Express + PostgreSQL) |
+| Pages | 8 publiques (Accueil, Vente, Location, Transit, Services, Contact, MesDemandes, Véhicule `/vehicule/:id`) + espace admin `/admin/*` |
+| Backend | `super-auto-api/` — Spring Boot 3 + SQLite : API REST + auth terminées (voir [GUIDE](../../super-auto-api/GUIDE.md)) |
 | Responsive | Mobile, Tablette, Desktop |
 
 ---
@@ -62,67 +62,79 @@
 
 ```
 SUPER-AUTO/
-├── README.md                          # Point d'entrée documentation
-├── AGENTS.md                          # Instructions assistants IA
-├── CAHIER_DES_CHARGES_SUPER_AUTO.md   # Spécifications fonctionnelles
+├── .gitignore                          # Racine : .env, *.db, .idea/, .vscode/…
+├── README.md                           # Point d'entrée documentation
+├── AGENTS.md                           # Instructions assistants IA
+├── CAHIER_DES_CHARGES_SUPER_AUTO.md    # Spécifications fonctionnelles
 │
-└── super-auto/                        # Application React
-    ├── index.html                     # HTML entry point
-    ├── package.json                   # Dépendances
-    ├── vite.config.ts                 # Configuration Vite
-    ├── tsconfig.json                  # Configuration TypeScript
-    ├── eslint.config.js               # Configuration ESLint
-    │
-    ├── public/                        # Assets statiques
-    │   ├── logo_primary.png           # Logo favicon
-    │   └── icons.svg                  # Icônes sociales
-    │
-    ├── doc/                           # Documentation
-    │   ├── README.md                  # Ce fichier
-    │   ├── ARCHITECTURE.md
-    │   ├── GUIDE-INSTALLATION.md
-    │   ├── GUIDE-DEMODIFICATION.md
-    │   ├── ETAT-APP.md
-    │   ├── ROADMAP.md
-    │   ├── GLOSSAIRE.md
-    │   ├── DEPANNAGE.md
-    │   ├── CHARTE-GRAPHIQUE.md
-    │   └── guides/                    # Guides individuels
-    │       ├── ajouter-une-page.md
-    │       ├── ajouter-un-composant.md
-    │       ├── modifier-la-navbar.md
-    │       ├── modifier-les-fichiers-donnees.md
-    │       ├── configurer-le-routing.md
-    │       └── ajouter-un-formulaire.md
-    │
-    └── src/
-        ├── main.tsx                   # Point d'entrée React
-        ├── App.tsx                    # Routes
-        ├── index.css                  # Thème Tailwind (couleurs custom)
-        │
-        ├── components/                # Composants réutilisables
-        │   ├── Navbar.tsx             # Barre de navigation
-        │   ├── Footer.tsx             # Pied de page
-        │   ├── VehicleCard.tsx        # Carte véhicule (pas encore utilisé)
-        │   └── SectionTitle.tsx       # Titre de section (pas encore utilisé)
-        │
-        ├── pages/                     # Pages du site
-        │   ├── Acceuil.tsx            # Page d'accueil
-        │   └── Contacte.tsx           # Page contact (en cours)
-        │
-        ├── data/                      # Données statiques
-        │   ├── vehicle.ts             # Véhicules (vente + location)
-        │   ├── services.ts            # Services et valeurs
-        │   └── testimonials.ts        # Témoignages clients
-        │
-        ├── types/                     # Interfaces TypeScript
-        │   ├── vehicule.ts            # Interface Vehicule
-        │   ├── avis.ts                # Interface Avis
-        │   └── index.ts              # Exports groupés
-        │
-        └── assets/                    # Images importées
-            ├── logo_super_Auto.png    # Logo entreprise
-            └── voiture.jpg            # Image hero accueil
+├── super-auto-api/                      # API Spring Boot (Java 17)
+│   ├── src/main/resources/application.properties     # Config commune
+│   ├── src/main/resources/application-prod.properties # Config production (secrets via env)
+│   └── src/main/java/com/superauto/                # controller / service / repository / config
+│
+├── deploy/                              # 🚀 Mise en ligne (serveur Linux + nginx)
+│   ├── README-DEPLOIEMENT.md           # ⭐ Guide pas à pas (8 étapes)
+│   ├── nginx/autoprime.conf            # Configuration nginx (site + proxy API)
+│   ├── systemd/autoprime-api.service   # Service systemd de l'API
+│   ├── autoprime.env.example           # Secrets (chmod 600)
+│   ├── backup-autoprime.sh             # Sauvegarde base + images
+│   └── maj-autoprime.sh                # Mise à jour en 1 commande
+│
+├── super-auto/                         # Application React
+│   ├── index.html                      # HTML entry point
+│   ├── package.json                    # Dépendances (pnpm)
+│   ├── vite.config.ts                  # Configuration Vite
+│   ├── tsconfig.json                   # Configuration TypeScript
+│   ├── eslint.config.js                # Configuration ESLint
+│   ├── .env.example                    # ⭐ Modèle de config VITE_* (le .env reste local)
+│   │
+│   ├── public/                         # Assets statiques
+│   │   ├── logo.svg  logo-invert.svg  logo.png  icons.svg
+│   │   └── images/vehicules/           # 11 photos réelles (libres de droits)
+│   │
+│   ├── doc/                            # Documentation
+│   │   ├── README.md                   # Ce fichier
+│   │   ├── PARAMETRAGE-TEMPLATE.md     # ⭐ Rebrander le template pour un client
+│   │   ├── ARCHITECTURE.md / GUIDE-INSTALLATION.md / GUIDE-DEMODIFICATION.md
+│   │   ├── ETAT-APP.md / ETAT_DU_CODE.md / ROADMAP.md
+│   │   ├── GLOSSAIRE.md / DEPANNAGE.md / CHARTE-GRAPHIQUE.md
+│   │   └── guides/                     # Guides individuels (ajouter une page…)
+│   │
+│   └── src/
+│       ├── main.tsx                    # Point d'entrée React
+│       ├── App.tsx                     # Routes (public + /admin)
+│       ├── index.css                   # Thème Tailwind (couleurs custom)
+│       │
+│       ├── config/                     # ⭐ Configuration unique
+│       │   ├── site.ts                 # Identité du client
+│       │   ├── api.ts                  # Client API (VITE_API_URL, jeton admin)
+│       │   ├── auth.ts                 # Session admin (rôles admin / dev)
+│       │   └── theme.ts nav.ts contenu.ts entreprise.ts headers.ts logo.ts
+│       │
+│       ├── components/                 # Composants réutilisables
+│       │   ├── Navbar.tsx / Footer.tsx # Sélecteurs de variante selon le layout
+│       │   ├── navbars/  footers/      # Variantes Signature, Editorial, Catalogue
+│       │   ├── VehicleCard.tsx / VehicleModal.tsx
+│       │   ├── PageHeader.tsx / SectionTitle.tsx / Reveal.tsx
+│       │   ├── DemandeModal.tsx / SinistreModal.tsx
+│       │   └── JustificatifsInput.tsx / JustificatifsListe.tsx
+│       │
+│       ├── pages/                      # Pages publiques
+│       │   ├── Acceuil.tsx  Vente.tsx  Location.tsx  Transit.tsx
+│       │   ├── Services.tsx  Contact.tsx  MesDemandes.tsx  VehiculeDetails.tsx
+│       │   ├── home/                   # 3 variantes d'accueil (Signature, Editorial, Catalogue)
+│       │   └── admin/                  # Espace admin (dashboard, CRUD, messages, devis…)
+│       │
+│       ├── data/                       # Données statiques (repli hors ligne + seed)
+│       │   ├── vehicle.ts  services.ts  testimonials.ts  location.ts  inbox.ts
+│       ├── hooks/                      # useVehicules, useMessages, useDevis, useAdminVehicules…
+│       ├── store/demandes.ts           # Demandes clients (localStorage)
+│       ├── types/                      # Interfaces TypeScript (vehicule, avis, demandes, admin)
+│       └── utils/                      # format.ts, image.ts
+│
+└── super-auto-api/                     # Backend Spring Boot 3 + SQLite
+    ├── mvnw / pom.xml / .gitignore
+    └── src/main/java/com/superauto/    # controllers, services, entities, dto, mapper
 ```
 
 ---
@@ -131,35 +143,50 @@ SUPER-AUTO/
 
 | Composant | Fichier | Rôle | Statut |
 |-----------|---------|------|--------|
-| `Navbar` | `components/Navbar.tsx` | Navigation sticky + menu mobile | Terminé |
-| `Footer` | `components/Footer.tsx` | Pied de page 4 colonnes | Terminé |
-| `VehicleCard` | `components/VehicleCard.tsx` | Carte véhicule (image + badge + infos) | Code présent, non intégré |
-| `SectionTitle` | `components/SectionTitle.tsx` | Titre centré de section | Code présent, non intégré |
+| `Navbar` | `components/Navbar.tsx` (+ `navbars/`) | Navigation sticky + menu mobile ; 3 variantes Signature / Editorial / Catalogue selon le layout | Terminé, intégré |
+| `Footer` | `components/Footer.tsx` (+ `footers/`) | Pied de page ; 3 variantes selon le layout | Terminé, intégré |
+| `VehicleCard` | `components/VehicleCard.tsx` | Carte véhicule (image + badge + infos) | Intégré (Vente, Location, accueil, détails, admin) |
+| `SectionTitle` | `components/SectionTitle.tsx` | Titre centré de section | Intégré (ex. HomeSignature) |
+| `PageHeader` | `components/PageHeader.tsx` | En-tête de page (breadcrumb + titre) | Intégré (7 pages) |
+| `Reveal` | `components/Reveal.tsx` | Animation d'apparition au scroll | Intégré (accueil) |
+| `VehicleModal` | `components/VehicleModal.tsx` | Modale détail véhicule (galerie, tarifs, CTA) | Terminé |
+| `DemandeModal` / `SinistreModal` | `components/` | Demandes de location/essai + déclaration de sinistre | Terminé |
+| `JustificatifsInput` / `JustificatifsListe` | `components/` | Pièces jointes des demandes (noms/liens) | Terminé |
 
 ---
 
 ## 6. Pages
 
+**Site public** (routes dans `src/App.tsx`)
+
 | Page | Route | Fichier | Statut |
 |------|-------|---------|--------|
-| Accueil | `/` | `pages/Acceuil.tsx` | Partiel (hero + expertise) |
-| Vente | `/vente` | — | Pas encore fait |
-| Location | `/location` | — | Pas encore fait |
-| Transit | `/transit` | — | Pas encore fait |
-| Services | `/services` | — | Pas encore fait |
-| Contact | `/contact` | `pages/Contacte.tsx` | En cours |
+| Accueil | `/` | `pages/Acceuil.tsx` (+ `home/` 3 variantes) | ✅ |
+| Vente | `/vente` | `pages/Vente.tsx` | ✅ Filtres, tri, modale |
+| Location | `/location` | `pages/Location.tsx` | ✅ Filtres, tri, modale, demande |
+| Transit | `/transit` | `pages/Transit.tsx` | ✅ 5 étapes + devis → `POST /api/devis-transit` |
+| Services | `/services` | `pages/Services.tsx` | ✅ |
+| Contact | `/contact` | `pages/Contact.tsx` | ✅ → `POST /api/contact` |
+| Suivi client | `/mes-demandes` | `pages/MesDemandes.tsx` | ✅ Recherche nom + téléphone |
+| Détail véhicule | `/vehicule/:id` | `pages/VehiculeDetails.tsx` | ✅ |
+
+**Espace admin** (`/admin` + `/admin/connexion`, voir `pages/admin/`)
+
+Tableau de bord, Véhicules, Location, Demandes, Messages, Devis, Services, Apparence, Entreprise, Contenu.
 
 ---
 
 ## 7. Données
 
-Les données statiques sont dans `src/data/` :
+Les données statiques sont dans `src/data/` — **repli hors ligne** (la source de vérité est l'API, seedée par `DataSeeder`) :
 
 | Fichier | Contenu | Statut |
 |---------|---------|--------|
-| `vehicle.ts` | 8 véhicules (6 vente, 3 location) | URLs d'images fausses |
-| `services.ts` | 3 domaines d'expertise + 4 valeurs | Données prêtes |
-| `testimonials.ts` | 3 témoignages clients | Données prêtes |
+| `vehicle.ts` | 8 véhicules (5 Vente, 3 Location) | ✅ Images locales `public/images/vehicules/` |
+| `services.ts` | Services, stats, domaines d'expertise | ✅ |
+| `testimonials.ts` | 3 témoignages clients | ✅ |
+| `location.ts` | Flotte & locations en cours (admin) | ✅ miroir localStorage |
+| `inbox.ts` | Boîte de réception (admin) | ✅ miroir localStorage |
 
 ---
 
@@ -185,14 +212,17 @@ Les données statiques sont dans `src/data/` :
 
 ## 9. Avancement actuel
 
-- Phase 0 (Nettoyage) : Terminé
-- Phase 1 (Routing) : Terminé
-- Phase 2 (Pages simples) : En cours (Contact)
-- Phase 3-7 : Pas encore commencé
+- Site public (8 pages) : ✅ Terminé
+- Espace admin (10 écrans) + connexion 3 rôles : ✅ Terminé
+- Backend Spring Boot (API REST + auth + seed) : ✅ Terminé
+- Branchement front ↔ API (avec repli local) : ✅ Terminé
+- Demandes de location/essai/sinistres : 🚧 encore en localStorage (endpoints à prévoir)
+- Emails de notification, déploiement : ⬜ Pas commencé
 
 > Voir [État de l'application](ETAT-APP.md) pour le détail
 > Voir [Roadmap](ROADMAP.md) pour la suite
+> Voir [État du code & plan backend](ETAT_DU_CODE.md) pour le plan d'intégration
 
 ---
 
-*Documentation Super Auto Badéma Sylla — Version 1.0*
+*Documentation AutoPrime — Version 1.0*

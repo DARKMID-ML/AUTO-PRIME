@@ -1,4 +1,4 @@
-# Guide d'installation — Super Auto Badéma Sylla
+# Guide d'installation — AutoPrime
 
 > Ce guide vous accompagne de zéro jusqu'à l'application qui tourne sur votre machine.
 > Dernière mise à jour : Juillet 2026
@@ -121,4 +121,4 @@ Ouvrez votre navigateur sur **http://localhost:5173/**
 
 ---
 
-*Guide d'installation — Super Auto Badéma Sylla — Version 1.0*
+*Guide d'installation — AutoPrime — Version 1.0*

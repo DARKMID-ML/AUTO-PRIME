@@ -1,4 +1,4 @@
-# Dépannage — Super Auto Badéma Sylla
+# Dépannage — AutoPrime
 
 > Erreurs courantes et leurs solutions. Consultez ce guide avant de demander de l'aide.
 > Dernière mise à jour : Juillet 2026
@@ -222,4 +222,4 @@ Voir [Guide de modification — Ajouter un formulaire](GUIDE-DEMODIFICATION.md#j
 
 ---
 
-*Dépannage — Super Auto Badéma Sylla — Version 1.0*
+*Dépannage — AutoPrime — Version 1.0*
