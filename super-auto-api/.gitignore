@@ -1,0 +1,17 @@
+# Build
+target/
+*.class
+
+# Base de données locale
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
