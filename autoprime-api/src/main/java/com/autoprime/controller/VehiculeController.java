@@ -44,8 +44,9 @@ public class VehiculeController {
     }
 
     @GetMapping("/{id}")
-    public VehiculeDTO getById(@PathVariable Long id) {
-        return service.getById(id);
+    public ResponseEntity<VehiculeDTO> getById(@PathVariable Long id) {
+        VehiculeDTO vehicule = service.getById(id);
+        return vehicule == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(vehicule);
     }
 
     @PostMapping

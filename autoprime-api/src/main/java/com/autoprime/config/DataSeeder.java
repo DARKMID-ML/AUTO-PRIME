@@ -8,14 +8,18 @@ import com.autoprime.repository.VehiculeRepository;
 import com.autoprime.service.AuthService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /**
  * Jeu de données de démonstration.
  * Remplit les tables UNIQUEMENT si elles sont vides — relancer l'app
  * n'écrase donc jamais les vraies données.
+ *
+ * Désactivé sous le profil `test` : les tests créent leurs propres données.
  */
 @Component
+@Profile("!test")
 public class DataSeeder implements CommandLineRunner {
 
     private final VehiculeRepository vehiculeRepository;
