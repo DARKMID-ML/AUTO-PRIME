@@ -13,7 +13,7 @@ WorkingDirectory=/opt/autoprime
 # Secrets et configuration (chmod 600, root:root)
 EnvironmentFile=/etc/autoprime/api.env
 
-ExecStart=/usr/bin/java -Xms128m -Xmx512m -XX:+UseSerialGC -jar /opt/autoprime/super-auto-api.jar --spring.profiles.active=prod
+ExecStart=/usr/bin/java -Xms128m -Xmx512m -XX:+UseSerialGC -jar /opt/autoprime/autoprime-api.jar --spring.profiles.active=prod
 
 Restart=on-failure
 RestartSec=5

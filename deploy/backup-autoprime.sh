@@ -6,7 +6,7 @@
 # ==================================================================
 set -euo pipefail
 
-DB="${DB_PATH:-/var/lib/autoprime/super-auto.db}"
+DB="${DB_PATH:-/var/lib/autoprime/autoprime.db}"
 SITE="${SITE_DIR:-/var/www/autoprime}"
 DEST="${1:-/var/backups/autoprime}"
 HORODATAGE="$(date +%Y-%m-%d_%H%M)"

@@ -20,8 +20,8 @@ if [ -z "$SERVEUR" ]; then
 fi
 
 RACINE="$(cd "$(dirname "$0")/.." && pwd)"
-FRONT="$RACINE/super-auto"
-API="$RACINE/super-auto-api"
+FRONT="$RACINE/autoprime-web"
+API="$RACINE/autoprime-api"
 
 echo "▶ 1/4 Build du site (production)…"
 cd "$FRONT"
@@ -31,12 +31,12 @@ pnpm build:prod
 echo "▶ 2/4 Build de l'API…"
 cd "$API"
 ./mvnw -DskipTests package
-JAR="$(ls -t target/super-auto-api-*.jar | head -1)"
+JAR="$(ls -t target/autoprime-api-*.jar | head -1)"
 echo "    → $JAR"
 
 echo "▶ 3/4 Envoi au serveur…"
 scp -r "$FRONT/dist/." "$SERVEUR:/var/www/autoprime/"
-scp "$JAR" "$SERVEUR:/opt/autoprime/super-auto-api.jar"
+scp "$JAR" "$SERVEUR:/opt/autoprime/autoprime-api.jar"
 
 echo "▶ 4/4 Redémarrage de l'API…"
 ssh "$SERVEUR" "systemctl restart autoprime-api && sleep 3 && systemctl is-active autoprime-api"

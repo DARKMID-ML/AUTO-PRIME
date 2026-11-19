@@ -2,7 +2,7 @@
 .env
 *.env.local
 # Identifiants du compte technique (DEV_IDENTIFIANT / DEV_MOT_DE_PASSE)
-super-auto-api/src/main/resources/application-prod.properties
+autoprime-api/src/main/resources/application-prod.properties
 
 # ── Bases de données locales ──────────────────────────────────
 *.db

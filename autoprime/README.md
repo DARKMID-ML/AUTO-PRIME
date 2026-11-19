@@ -1,4 +1,4 @@
-# 📘 AutoPrime (SUPER-AUTO-1) — PRD & TRD
+# 📘 AutoPrime (AutoPrime) — PRD & TRD
 
 > **Stack** : Spring Boot 3.5 + Java 17 + React 19 + Vite + Tailwind  
 > **Domaine** : Service automobile (véhicules, réparations, pièces)  

@@ -13,15 +13,15 @@
 | `pnpm build` | Build de production (tsc + vite build) |
 | `pnpm lint` | Vérifier le code avec ESLint |
 | `pnpm preview` | Prévisualiser le build de production |
-| `pnpm exa:search "…"` | Recherche web via Exa (`EXA_API_KEY` dans `super-auto/.env`) |
+| `pnpm exa:search "…"` | Recherche web via Exa (`EXA_API_KEY` dans `autoprime-web/.env`) |
 
-**Toutes les commandes front doivent être lancées depuis `super-auto/`.**
+**Toutes les commandes front doivent être lancées depuis `autoprime-web/`.**
 
-**Backend** (depuis `super-auto-api/`, requis JDK 17+) :
+**Backend** (depuis `autoprime-api/`, requis JDK 17+) :
 
 | Commande | Rôle |
 |----------|------|
-| `./mvnw spring-boot:run` | Lancer l'API (port 8080, SQLite `super-auto.db`) |
+| `./mvnw spring-boot:run` | Lancer l'API (port 8080, SQLite `autoprime.db`) |
 | `./mvnw test` | Lancer les tests |
 | `./mvnw package` | Build du jar |
 
@@ -31,9 +31,9 @@
 
 ## Fichiers à ne jamais pousser
 
-Le `.gitignore` **racine** exclut : `.env`, `*.db` (`super-auto.db`), `.idea/`, `.vscode/`, `.freebuff/`, `node_modules/`, `dist/`, `target/`, `*.log`.
+Le `.gitignore` **racine** exclut : `.env`, `*.db` (`autoprime.db`), `.idea/`, `.vscode/`, `.freebuff/`, `node_modules/`, `dist/`, `target/`, `*.log`.
 
-- `super-auto/.env.example` est le modèle à versionner ; `super-auto/.env` reste local (config `VITE_*` par client).
+- `autoprime-web/.env.example` est le modèle à versionner ; `autoprime-web/.env` reste local (config `VITE_*` par client).
 - Ne jamais forcer l'ajout de ces fichiers (`git add -f`).
 
 ---
@@ -71,9 +71,9 @@ AutoPrime/
 ├── .gitignore                    # Racine : fichiers à ne jamais pousser
 ├── AGENTS.md                     # Ce fichier
 ├── README.md                     # Point d'entrée documentation
-├── CAHIER_DES_CHARGES_SUPER_AUTO.md
+├── CAHIER_DES_CHARGES_AUTOPRIME.md
 │
-├── super-auto/                   # Front React
+├── autoprime-web/                   # Front React
 │   ├── src/
 │   │   ├── components/           # Navbar, Footer, VehicleCard + variants navbars/ & footers/
 │   │   ├── pages/                # Pages publiques (Acceuil, Vente, Location, Transit, Services, Contact, MesDemandes, VehiculeDetails)
@@ -91,10 +91,10 @@ AutoPrime/
 │   ├── doc/                      # Documentation
 │   └── index.html                # HTML entry point
 │
-└── super-auto-api/               # Backend Spring Boot 3 + SQLite
+└── autoprime-api/               # Backend Spring Boot 3 + SQLite
     ├── mvnw                      # Maven wrapper
     ├── pom.xml
-    └── src/main/java/com/superauto/   # controllers, services, entities, dto, mapper…
+    └── src/main/java/com/autoprime/   # controllers, services, entities, dto, mapper…
 ```
 
 ---
@@ -114,7 +114,7 @@ AutoPrime/
 
 ## Fichiers de données
 
-Les données statiques sont dans `super-auto/src/data/` — elles servent de **repli hors ligne** et de seed du backend (`DataSeeder`) :
+Les données statiques sont dans `autoprime-web/src/data/` — elles servent de **repli hors ligne** et de seed du backend (`DataSeeder`) :
 
 - `vehicle.ts` — 8 véhicules (5 Vente, 3 Location), images locales `public/images/vehicules/`
 - `services.ts` — Domaines d'expertise + valeurs
@@ -122,13 +122,13 @@ Les données statiques sont dans `super-auto/src/data/` — elles servent de **r
 - `location.ts` — Flotte/locations (admin)
 - `inbox.ts` — Boîte de réception (admin)
 
-La source de vérité est désormais l'API : `GET/POST/PUT/DELETE /api/vehicules`, `/api/contact`, `/api/devis-transit`, `/api/services`, `/api/avis`, `/api/auth` (voir `super-auto-api/GUIDE.md`).
+La source de vérité est désormais l'API : `GET/POST/PUT/DELETE /api/vehicules`, `/api/contact`, `/api/devis-transit`, `/api/services`, `/api/avis`, `/api/auth` (voir `autoprime-api/GUIDE.md`).
 
 ---
 
 ## Cahier des charges
 
-Le fichier `CAHIER_DES_CHARGES_SUPER_AUTO.md` (racine) contient toutes les spécifications fonctionnelles. C'est la **référence principale** pour le contenu et le comportement des pages.
+Le fichier `CAHIER_DES_CHARGES_AUTOPRIME.md` (racine) contient toutes les spécifications fonctionnelles. C'est la **référence principale** pour le contenu et le comportement des pages.
 
 ---
 

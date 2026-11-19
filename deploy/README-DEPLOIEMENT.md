@@ -51,7 +51,7 @@ chmod 750 /var/lib/autoprime
 Sur votre machine (ou sur le serveur) :
 
 ```bash
-cd super-auto
+cd autoprime-web
 
 # 1. Renseigner les vraies coordonnées du client
 nano .env          # VITE_SITE_NOM, VITE_TELEPHONE, VITE_EMAIL, VITE_ADRESSE_*…
@@ -61,7 +61,7 @@ pnpm install --frozen-lockfile
 pnpm build:prod   # = VITE_API_URL=/ tsc -b && vite build
 ```
 
-Le résultat est dans `super-auto/dist/`.
+Le résultat est dans `autoprime-web/dist/`.
 
 > **Pourquoi `VITE_API_URL=/` ?** Le navigateur appelle `/api/...` sur le même
 > domaine que le site : pas de CORS, pas de configuration supplémentaire.
@@ -70,11 +70,11 @@ Le résultat est dans `super-auto/dist/`.
 ### API (Spring Boot)
 
 ```bash
-cd super-auto-api
+cd autoprime-api
 ./mvnw -DskipTests package
 ```
 
-Le résultat est dans `super-auto-api/target/super-auto-api-0.1.0-SNAPSHOT.jar`.
+Le résultat est dans `autoprime-api/target/autoprime-api-0.1.0-SNAPSHOT.jar`.
 
 ---
 
@@ -82,7 +82,7 @@ Le résultat est dans `super-auto-api/target/super-auto-api-0.1.0-SNAPSHOT.jar`.
 
 ```bash
 # Envoyer le jar
-scp super-auto-api/target/super-auto-api-0.1.0-SNAPSHOT.jar root@IP:/opt/autoprime/super-auto-api.jar
+scp autoprime-api/target/autoprime-api-0.1.0-SNAPSHOT.jar root@IP:/opt/autoprime/autoprime-api.jar
 
 # Secrets : partir du modèle fourni
 scp deploy/autoprime.env.example root@IP:/etc/autoprime/api.env
@@ -110,7 +110,7 @@ curl http://127.0.0.1:8080/api/vehicules
 
 ```bash
 # Envoyer le build
-scp -r super-auto/dist/* root@IP:/var/www/autoprime/
+scp -r autoprime-web/dist/* root@IP:/var/www/autoprime/
 
 # Configuration nginx
 cp deploy/nginx/autoprime.conf /etc/nginx/sites-available/autoprime
@@ -164,12 +164,12 @@ Les sauvegardes (base + images) sont conservées 30 jours dans `/var/backups/aut
 
 ```bash
 # Sur votre machine
-cd super-auto && pnpm build:prod
-cd ../super-auto-api && ./mvnw -DskipTests package
+cd autoprime-web && pnpm build:prod
+cd ../autoprime-api && ./mvnw -DskipTests package
 
 # Sur le serveur
-scp -r super-auto/dist/* root@IP:/var/www/autoprime/
-scp super-auto-api/target/super-auto-api-0.1.0-SNAPSHOT.jar root@IP:/opt/autoprime/super-auto-api.jar
+scp -r autoprime-web/dist/* root@IP:/var/www/autoprime/
+scp autoprime-api/target/autoprime-api-0.1.0-SNAPSHOT.jar root@IP:/opt/autoprime/autoprime-api.jar
 ssh root@IP "systemctl restart autoprime-api"
 ```
 
@@ -178,7 +178,7 @@ ssh root@IP "systemctl restart autoprime-api"
 ## 🧪 Tester la configuration de production en local (avant le serveur)
 
 ```bash
-cd super-auto-api
+cd autoprime-api
 ./mvnw -DskipTests package
 
 # Lancer le jar exactement comme sur le serveur
@@ -187,7 +187,7 @@ PORT=8090 \
 CORS_ORIGINS=http://localhost:4173 \
 ADMIN_IDENTIFIANT=admin ADMIN_MOT_DE_PASSE=MdpTestAdmin \
 DEV_IDENTIFIANT=dev DEV_MOT_DE_PASSE=MdpTestDev \
-java -jar target/super-auto-api-0.1.0-SNAPSHOT.jar --spring.profiles.active=prod
+java -jar target/autoprime-api-0.1.0-SNAPSHOT.jar --spring.profiles.active=prod
 ```
 
 Vérifications :
@@ -206,7 +206,7 @@ curl -X POST http://localhost:8090/api/auth/login \
 Côté site, la même topologie que nginx se teste en local :
 
 ```bash
-cd super-auto
+cd autoprime-web
 pnpm build:prod     # API en même origine
 pnpm preview        # http://localhost:4173 → /api est relayé vers :8080
 ```
@@ -215,7 +215,7 @@ pnpm preview        # http://localhost:4173 → /api est relayé vers :8080
 
 ## ✅ Checklist avant d'annoncer le site en ligne
 
-- [ ] Les vraies coordonnées sont dans `super-auto/.env` (téléphone, WhatsApp, email, adresse)
+- [ ] Les vraies coordonnées sont dans `autoprime-web/.env` (téléphone, WhatsApp, email, adresse)
 - [ ] Mots de passe admin/dev changés dans `/etc/autoprime/api.env`
 - [ ] HTTPS actif (cadran 🔒 dans le navigateur)
 - [ ] `http://` redirige vers `https://`
