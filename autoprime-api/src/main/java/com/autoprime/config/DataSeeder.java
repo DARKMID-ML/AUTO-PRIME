@@ -25,6 +25,8 @@ public class DataSeeder implements CommandLineRunner {
     private final VehiculeRepository vehiculeRepository;
     private final ServiceRepository serviceRepository;
     private final AvisRepository avisRepository;
+    private final ContactRepository contactRepository;
+    private final DevisTransitRepository devisTransitRepository;
     private final AuthService authService;
 
     @Value("${app.site.nom:AutoPrime}")
@@ -39,10 +41,14 @@ public class DataSeeder implements CommandLineRunner {
     public DataSeeder(VehiculeRepository vehiculeRepository,
                       ServiceRepository serviceRepository,
                       AvisRepository avisRepository,
+                      ContactRepository contactRepository,
+                      DevisTransitRepository devisTransitRepository,
                       AuthService authService) {
         this.vehiculeRepository = vehiculeRepository;
         this.serviceRepository = serviceRepository;
         this.avisRepository = avisRepository;
+        this.contactRepository = contactRepository;
+        this.devisTransitRepository = devisTransitRepository;
         this.authService = authService;
     }
 
@@ -51,6 +57,8 @@ public class DataSeeder implements CommandLineRunner {
         seedCompteAdmin();
         seedVehicules();
         seedServices();
+        seedMessages();
+        seedDevisTransit();
         seedAvis();
     }
 
@@ -194,7 +202,88 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     // ------------------------------------------------------------------ //
-    // Témoignages : autoprime-web/src/data/testimonials.ts                    //
+    // Messages de contact : autoprime-web/src/data/inbox.ts                //
+    // ------------------------------------------------------------------ //
+    private void seedMessages() {
+        if (contactRepository.count() > 0) {
+            return;
+        }
+
+        saveContact("Amadou Diallo", "amadou.diallo@email.com",
+                "+223 70 12 34 56", "Achat de véhicule",
+                "Bonjour, je suis intéressé par la Toyota Land Cruiser 2023. Est-elle toujours disponible ? Je peux passer au showroom samedi.",
+                "new");
+        saveContact("Fatima Traoré", "fatima.traore@email.com",
+                "+223 76 55 41 02", "Location de véhicule",
+                "Je souhaite louer un SUV pour deux semaines en décembre. Quel est le tarif journalier et la caution demandée ?",
+                "new");
+        saveContact("Ibrahim Koné", "ibrahim.kone@email.com",
+                "+223 74 88 20 10", "Service Transit",
+                "Merci pour l'importation de mon BMW X5, tout est arrivé en parfait état. Je vous recommande sans hésiter !",
+                "read");
+        saveContact("Aïssata Coulibaly", "aissata.coulibaly@email.com",
+                "+223 65 30 18 99", "Service après-vente",
+                "J'ai fait réviser ma Hyundai Tucson chez vous la semaine dernière, tout fonctionne parfaitement. Merci au mécanicien.",
+                "archived");
+        saveContact("Moussa Diarra", "moussa.diarra@email.com",
+                "+223 74 88 20 10", "Autre",
+                "Avez-vous des pièces de rechange pour une Ford Ranger 2022 (kit de distribution) ? Disponible à Bamako ?",
+                "read");
+    }
+
+    private void saveContact(String nom, String email, String telephone,
+                             String sujet, String message, String statut) {
+        com.autoprime.entity.Contact c = new com.autoprime.entity.Contact();
+        c.setNom(nom);
+        c.setEmail(email);
+        c.setTelephone(telephone);
+        c.setSujet(sujet);
+        c.setMessage(message);
+        c.setStatut(statut);
+        contactRepository.save(c);
+    }
+
+    // ------------------------------------------------------------------ //
+    // Demandes de devis transit : autoprime-web/src/data/inbox.ts         //
+    // ------------------------------------------------------------------ //
+    private void seedDevisTransit() {
+        if (devisTransitRepository.count() > 0) {
+            return;
+        }
+
+        saveDevisTransit("Sékou Camara", "0223 70 44 12 90",
+                "sekou.camara@email.com", "Toyota Land Cruiser 2023", "france",
+                "Livraison souhaitée avant fin novembre si possible.",
+                "new");
+        saveDevisTransit("Boubacar Sangaré", "0223 78 21 55 43",
+                "", "Mercedes GLE 450", "usa",
+                "",
+                "contacted");
+        saveDevisTransit("Djénéba Keïta", "0223 66 09 77 31",
+                "djeneba.keita@email.com", "Hyundai Tucson 2024", "dubai",
+                "Je peux fournir les références du véhicule sur demande.",
+                "new");
+        saveDevisTransit("Ousmane Berthé", "0223 72 33 60 18",
+                "", "Ford Ranger Wildtrak 2024", "allemagne",
+                "", "archived");
+    }
+
+    private void saveDevisTransit(String nom, String telephone,
+                                   String email, String vehicule, String pays,
+                                   String message, String statut) {
+        com.autoprime.entity.DevisTransit d = new com.autoprime.entity.DevisTransit();
+        d.setNom(nom);
+        d.setTelephone(telephone);
+        d.setEmail(email);
+        d.setVehicule(vehicule);
+        d.setPays(pays);
+        d.setMessage(message);
+        d.setStatut(statut);
+        devisTransitRepository.save(d);
+    }
+
+    // ------------------------------------------------------------------ //
+    // Témoignages : autoprime-web/src/data/testimonials.ts                //
     // ------------------------------------------------------------------ //
     private void seedAvis() {
         if (avisRepository.count() > 0) {

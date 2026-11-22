@@ -4,6 +4,9 @@ import com.autoprime.dto.VehiculeDTO;
 import com.autoprime.entity.Vehicule;
 import com.autoprime.mapper.VehiculeMapper;
 import com.autoprime.repository.VehiculeRepository;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,9 +19,21 @@ import java.util.List;
 public class VehiculeService {
 
     private final VehiculeRepository repository;
+    private final Counter vehiculesCreated;
+    private final Counter vehiculesUpdated;
+    private final Counter vehiculesDeleted;
+    private final Gauge vehiculesTotal;
 
-    public VehiculeService(VehiculeRepository repository) {
+    public VehiculeService(VehiculeRepository repository, MeterRegistry registry) {
         this.repository = repository;
+        this.vehiculesCreated = Counter.builder("autoprime.vehicules.creations")
+                .description("Nombre de véhicules créés").register(registry);
+        this.vehiculesUpdated = Counter.builder("autoprime.vehicules.updated")
+                .description("Nombre de véhicules modifiés").register(registry);
+        this.vehiculesDeleted = Counter.builder("autoprime.vehicules.deleted")
+                .description("Nombre de véhicules supprimés").register(registry);
+        this.vehiculesTotal = Gauge.builder("autoprime.vehicules.total", repository, VehiculeRepository::count)
+                .description("Total véhicules en base").register(registry);
     }
 
     /** Tous les véhicules (page Admin + pages Vente/Location). */
@@ -40,7 +55,13 @@ public class VehiculeService {
 
     /** Création (id null) ou mise à jour complète. */
     public VehiculeDTO save(VehiculeDTO dto) {
+        boolean isNew = dto.getId() == null;
         Vehicule saved = repository.save(VehiculeMapper.toEntity(dto));
+        if (isNew) {
+            vehiculesCreated.increment();
+        } else {
+            vehiculesUpdated.increment();
+        }
         return VehiculeMapper.toDTO(saved);
     }
 
@@ -50,6 +71,7 @@ public class VehiculeService {
             return false;
         }
         repository.deleteById(id);
+        vehiculesDeleted.increment();
         return true;
     }
 }

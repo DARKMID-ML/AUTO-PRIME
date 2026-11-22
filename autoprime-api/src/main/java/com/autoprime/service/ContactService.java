@@ -4,6 +4,9 @@ import com.autoprime.dto.ContactDTO;
 import com.autoprime.entity.Contact;
 import com.autoprime.mapper.ContactMapper;
 import com.autoprime.repository.ContactRepository;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,14 +16,26 @@ import java.util.List;
 public class ContactService {
 
     private final ContactRepository repository;
+    private final Counter contactCreated;
+    private final Gauge contactTotal;
+    private final Counter contactNew;
 
-    public ContactService(ContactRepository repository) {
+    public ContactService(ContactRepository repository, MeterRegistry registry) {
         this.repository = repository;
+        this.contactCreated = Counter.builder("autoprime.contact.creations")
+                .description("Nombre de messages de contact créés").register(registry);
+        this.contactTotal = Gauge.builder("autoprime.contact.total", repository, ContactRepository::count)
+                .description("Total messages contact en base").register(registry);
+        this.contactNew = Counter.builder("autoprime.messages.new")
+                .description("Messages avec statut new").register(registry);
     }
 
     /** Tous les messages reçus. */
     public List<ContactDTO> getAll() {
-        return ContactMapper.toDTO(repository.findAll());
+        List<ContactDTO> list = ContactMapper.toDTO(repository.findAll());
+        long newCount = list.stream().filter(c -> "new".equals(c.getStatut())).count();
+        contactNew.increment(newCount);
+        return list;
     }
 
     /** Un contact par son id. */
@@ -32,6 +47,7 @@ public class ContactService {
 
     /** Création (id null) ou mise à jour d'un message existant. */
     public ContactDTO save(ContactDTO dto) {
+        boolean isNew = dto.getId() == null;
         Contact entity = dto.getId() != null
                 ? repository.findById(dto.getId()).orElseGet(Contact::new)
                 : new Contact();
@@ -46,7 +62,11 @@ public class ContactService {
         } else if (entity.getStatut() == null) {
             entity.setStatut("new");
         }
-        return ContactMapper.toDTO(repository.save(entity));
+        Contact saved = repository.save(entity);
+        if (isNew) {
+            contactCreated.increment();
+        }
+        return ContactMapper.toDTO(saved);
     }
 
     /** Change le statut d'un message (lu / archivé). */
