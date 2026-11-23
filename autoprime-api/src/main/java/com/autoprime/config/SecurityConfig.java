@@ -1,5 +1,6 @@
 package com.autoprime.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,9 +21,13 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsSource) throws Exception {
+    public SecurityFilterChain filterChain(
+            HttpSecurity http,
+            @Qualifier("corsConfigurationSource") CorsConfigurationSource corsSource) throws Exception {
         http
-                // CORS déjà géré par WebConfig, mais nécessaire ici pour les réponses 401/403
+                // Source explicite définie par WebConfig (à partir de cors.allowed-origins).
+                // Le CorsFilter s'exécute avant l'AuthFilter : les 401 rédigés par le filtre
+                // portent donc Access-Control-Allow-Origin et restent lisibles par le navigateur.
                 .cors(cors -> cors.configurationSource(corsSource))
                 // Pas de CSRF (API stateless, tokens dans l'en-tête Authorization)
                 .csrf(csrf -> csrf.disable())
