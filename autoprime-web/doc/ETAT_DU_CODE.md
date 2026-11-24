@@ -1,7 +1,7 @@
 # ÉTAT DU CODE & PLAN BACKEND — AutoPrime
 
-**Date :** 02 Octobre 2026  
-**Périmètre :** Frontend public + espace admin + suivi client (terminés) + Backend (`autoprime-api/` Spring Boot + SQLite : API REST, auth et seed terminés ; reste demandes/sinistres, emails, upload images → [GUIDE](../../autoprime-api/GUIDE.md))  
+**Date :** 24 Novembre 2026  
+**Périmètre :** Frontend public + espace admin + suivi client (terminés) + Backend (`autoprime-api/` Spring Boot + SQLite : API REST, auth 3 rôles, seed, sécurité, observabilité et tests terminés ; reste emails, upload images, Flyway/PostgreSQL → [GUIDE](../../autoprime-api/GUIDE.md))  
 **Référence :** `CAHIER_DES_CHARGES_AUTOPRIME.md` (racine du projet)
 
 ---
@@ -80,17 +80,19 @@ Les routes sont déclarées dans `src/App.tsx`. La Navbar (`src/components/Navba
 | `DemandeModal.tsx` | Formulaire de demande de location (dates, jours calculés, permis obligatoire) ou d'essai |
 | `SinistreModal.tsx` | Déclaration d'un problème sur un véhicule loué (gravité mineure/majeure, date, description, justificatifs) |
 
-### 1.5 Données & types (à remplacer par l'API plus tard)
+### 1.5 Données & types
 
 | Fichier | Contenu |
 |---------|---------|
-| `src/data/vehicle.ts` | `featuredVehicules` — 8 véhicules (5 Vente, 3 Location) |
+| `src/data/vehicle.ts` | `featuredVehicules` — 8 véhicules (5 Vente, 3 Location), images locales `public/images/vehicules/` |
 | `src/data/services.ts` | 6 services, 4 statistiques, domaines d'expertise, pourquoi-nous-choisir |
-| `src/data/testimonials.ts` | Témoignages clients |
+| `src/data/testimonials.ts` | Témoignages clients (alignés sur l'entité `Avis`) |
+| `src/data/location.ts` | Flotte + locations (repli hors ligne) |
+| `src/data/inbox.ts` | Boîte de réception (repli hors ligne) |
 | `src/types/vehicule.ts` | Interface `Vehicule` (champs `carburant` et `localisation` **ajoutés** pour les filtres) |
 | `src/types/avis.ts` | Interface `Avis` |
 | `src/types/demandes.ts` | `DemandeLocation`, `DemandeEssai`, `Sinistre`, `Justificatif`, `StatutDemande`, `StatutSinistre`, `StoreDemandes` (alignés sur les entités Java) |
-| `src/store/demandes.ts` | Hook `useDemandes()` : persistance localStorage `sa:demandes`, actions `ajouterLocation/ajouterEssai/ajouterSinistre`, `statuerDemande`, `statuerSinistre` |
+| `src/store/demandes.ts` | Hook `useDemandes()` : écritures via `apiEnvoyer` (POST/PATCH), miroir localStorage `sa:demandes`, actions `ajouterLocation/ajouterEssai/ajouterSinistre`, `statuerDemande`, `statuerSinistre`. Refus serveur (400/403…) → erreur remontée à l'écran, rien n'est enregistré ; serveur injoignable seulement → repli local |
 | `src/types/index.ts` | Ré-exports |
 
 ### 1.6 Parcours métier « demandes » (localStorage, en attendant l'API)
@@ -109,13 +111,13 @@ Les routes sont déclarées dans `src/App.tsx`. La Navbar (`src/components/Navba
 5. **`src/pages/Transite.tsx`** : ✅ supprimé — remplacé par `Transit.tsx`.
 6. **Accueil** : ✅ 3 variantes complètes construites (`HomeSignature` par défaut, `HomeAtelier`, `HomeCatalogue`) commutées par `useSiteLayout`.
 7. **Thème sombre** et vues grille/liste (boutons visuels) non fonctionnels — optionnels selon le cahier.
-8. **Données admin** : véhicules, messages et devis sont **branchés à l'API** (miroir localStorage conservé hors ligne). Restent en localStorage : demandes location/essai/sinistres (`sa:demandes`), flotte/locations (`admin:locations`, `admin:flotte`), apparence/contenu du site. Les justificatifs joints sont des noms de fichiers/liens, pas des uploads.
+8. **Données admin** : véhicules, messages, devis, demandes location/essai et sinistres sont **branchés à l'API** (miroir localStorage conservé hors ligne). Restent en localStorage : flotte/locations (`admin:locations`, `admin:flotte`), apparence/contenu du site. Les justificatifs joints sont des noms de fichiers/liens (ou un aperçu data URL), pas des uploads serveur.
 9. **Auth admin** : ✅ — `/admin/connexion` + `AuthFilter` côté API (jeton Bearer, session 12 h, rôles admin/dev). La page « Suivi client » reste volontairement publique.
 
 
 ---
 
-## PARTIE 2 — PLAN BACKEND 🚧 (API + auth faits ; reste demandes, emails, upload)
+## PARTIE 2 — PLAN BACKEND 🚧 (API + auth + demandes/sinistres faits ; reste emails, upload, BDD)
 
 ### 2.1 Objectifs (§5.1 du cahier)
 
@@ -180,36 +182,41 @@ Stack initialement prévue dans le cahier (§5.2, non retenue) :
 |---------|-------|-------|------|
 | GET | `/api/vehicules` | Liste du catalogue (seed `DataSeeder`) | ✅ |
 | GET | `/api/vehicules/:id` | Détail | ✅ |
-| POST/PUT/DELETE | `/api/vehicules[/:id]` | CRUD admin (jeton Bearer) | ✅ |
-| GET/POST/PATCH/DELETE | `/api/contact[/:id][/statut]` | Messages du formulaire contact | ✅ |
+| POST/PUT/DELETE | `/api/vehicules[/:id]` | CRUD (admin + vendeur) | ✅ |
+| GET/POST/PATCH/DELETE | `/api/contact[/:id][/statut]` | Messages (lecture/écriture : vendeur+ ; suppression : admin/dev) | ✅ |
 | GET/POST/PATCH/DELETE | `/api/devis-transit[/:id][/statut]` | Devis transit (`new`/`contacted`/`archived`) | ✅ |
 | GET/POST/PUT/DELETE | `/api/services[/:id]` | CRUD services | ✅ |
 | GET/POST/PUT/DELETE | `/api/avis[/:id]` | Témoignages clients | ✅ |
-| POST `/api/auth/login` · POST `/api/auth/logout` · GET `/api/auth/moi` | Session admin (jeton 12 h) | ✅ |
-| GET/POST | `/api/demandes/location` | `{ client, telephone, vehicule, dateDebut, dateFin, justificatifs[] }` | ⬜ à faire (localStorage) |
-| GET/POST | `/api/demandes/essai` | `{ client, telephone, vehicule, dateEssai, message, justificatifs[] }` | ⬜ à faire (localStorage) |
-| PATCH | `/api/demandes/:id` | `{ statut: validee \| refusee, motifRefus }` | ⬜ à faire |
-| POST | `/api/demandes/:id/ouvrir-location` | Transforme une demande validée en location | ⬜ à faire |
-| GET/POST | `/api/sinistres` | `{ client, telephone, vehicule, dateIncident, gravite, description, justificatifs[] }` | ⬜ à faire (localStorage) |
-| PATCH | `/api/sinistres/:id` | `{ statut: recue \| en_examen \| acceptee \| refusee, decision }` | ⬜ à faire |
+| POST `/api/auth/login` · POST `/api/auth/logout` · GET `/api/auth/moi` · POST `/api/auth/mot-de-passe` · GET/POST/PATCH/DELETE `/api/auth/comptes[/:id]` | Session admin (jeton 12 h, BCrypt, limite de tentatives) | ✅ |
+| GET | `/api/site/parametres` | Paramètres du site (public) | ✅ |
+| GET/POST | `/api/demandes/location` | `{ client, telephone, vehicule, dateDebut, dateFin, justificatifs[] }` | ✅ POST public, GET connecté |
+| GET/POST | `/api/demandes/essai` | `{ client, telephone, vehicule, dateEssai, message, justificatifs[] }` | ✅ POST public, GET connecté |
+| PATCH | `/api/demandes/location/:id/statut` · `/api/demandes/essai/:id/statut` | `{ statut: validee \| refusee, motifRefus }` | ✅ |
+| POST | `/api/demandes/:id/ouvrir-location` | Transforme une demande validée en location | ⬜ à faire (module flotte/locations) |
+| GET/POST | `/api/sinistres` | `{ client, telephone, vehicule, dateIncident, gravite, description, justificatifs[] }` | ✅ POST public, GET connecté |
+| PATCH | `/api/sinistres/:id/statut` | `{ statut: recue \| en_examen \| acceptee \| refusee, decision }` | ✅ |
 
 ### 2.5 Interface d'administration (§5.5)
 
 - Dashboard : stats (nb véhicules, messages, devis)
-- Véhicules : liste + recherche/filtres, CRUD, upload images, changement de statut
-- Services : CRUD, réorganisation
-- Messages contact : liste, lu/non-lu, archivage
-- Devis transit : liste, statut Nouveau/Contacté/Archivé
+- Véhicules : liste + recherche/filtres, CRUD (admin + vendeur), upload images, changement de statut
+- Services : CRUD, réorganisation (admin + dev)
+- Messages contact : liste, lu/non-lu, archivage (vendeur+) ; suppression (admin/dev)
+- Devis transit : liste, statut Nouveau/Contacté/Archivé (vendeur+) ; suppression (admin/dev)
 - Demandes clients : validation/refus des demandes de location et d'essai (avec motif de refus), traitement des sinistres (mise en examen puis décision)
-- Sécurité : JWT, session 24h, déconnexion auto
+- Comptes : création, réinitialisation mot de passe, activation/désactivation, suppression (admin/dev)
+- Paramètres du site : lecture publique, écriture (admin/dev)
+- Sécurité : jeton Bearer stateless, session 12 h, limite de tentatives de connexion (5 / 15 min), BCrypt, migration automatique SHA-256 → BCrypt
 
 ### 2.6 Intégration front — réalisée
 
-1. `src/config/api.ts` : client unique (`apiGet` / `apiSend` / `apiDelete`), base URL `VITE_API_URL` (repli `http://localhost:8080`), ajout automatique du jeton `Authorization: Bearer …` si une session admin existe.
-2. Hooks : `useVehicules` (catalogue public), `useAdminVehicules` (CRUD admin), `useMessages`, `useDevis` — **API d'abord, repli localStorage/localData** si le serveur est éteint (badge Serveur/Local).
+1. `src/config/api.ts` : client unique (`apiGet` / `apiSend` / `apiDelete`), base URL `VITE_API_URL` (repli `http://localhost:8081`), ajout automatique du jeton `Authorization: Bearer …` si une session admin existe.
+2. Hooks : `useVehicules` (catalogue public), `useAdminVehicules` (CRUD), `useMessages`, `useDevis` — **API d'abord, repli localStorage/localData** si le serveur est éteint (badge Serveur/Local).
 3. `Contact.tsx` → `POST /api/contact` ; `Transit.tsx` → `POST /api/devis-transit` (Formspree retiré).
-4. Reste à brancher : demandes de location/essai/sinistres (§2.4), uploads d'images, éventuellement avis/services dynamiques.
-5. Config locale : `autoprime-web/.env` → `VITE_API_URL` (modèle versionné : `.env.example`).
+4. ✅ Branché : véhicules, services, avis, messages, devis, contact, auth, paramètres du site.
+5. ⬜ Reste à brancher : demandes de location/essai/sinistres (§2.4), uploads d'images.
+6. Config locale : `autoprime-web/.env` → `VITE_API_URL` (modèle versionné : `.env.example`).
+7. Espace admin : **chargement à la demande** (`lazy` + `Suspense`) — le visiteur du site public ne télécharge jamais le code de l'admin.
 
 ### 2.7 Roadmap backend proposée
 
@@ -217,14 +224,18 @@ Stack initialement prévue dans le cahier (§5.2, non retenue) :
 |---|-------|----------|
 | 1 | ✅ Fait : repo `autoprime-api/` : Spring Boot + SQLite (JPA) | serveur + schéma + entités/DTOs/mappers |
 | 2 | ✅ Fait : seed (`DataSeeder` : véhicules, services, avis) | tables remplies |
-| 3 | ✅ Fait : endpoints publics (`/api/vehicules`, `/api/services`, `/api/avis`) | GET fonctionnels |
+| 3 | ✅ Fait : endpoints publics (`/api/vehicules`, `/api/services`, `/api/avis`, `/api/site/parametres`) | GET fonctionnels |
 | 4 | ✅ Fait : endpoints écriture (`/api/contact`, `/api/devis-transit`) + validation | POST fonctionnels |
-| 5 | ✅ Fait : auth session + CRUD admin (véhicules, services) — reste l'upload d'images | API opérationnelle |
-| 6 | ⬜ À faire : endpoints demandes (location, essai) + sinistres (§2.4) | flux métier branché |
-| 7 | ⬜ À faire : emails de notification (demande reçue, décision, sinistre) | emails |
-| 8 | ✅ Fait : intégration front (§2.6) + retrait de Formspree | front connecté |
+| 5 | ✅ Fait : auth 3 rôles + CRUD + gestion des comptes + limite de tentatives + BCrypt + migration SHA-256 | sécurité complète |
+| 6 | ✅ Fait : intégration front (§2.6) + retrait de Formspree + code-splitting admin | front connecté |
+| 7 | ✅ Fait : observabilité (Prometheus + Grafana + Loki) + Swagger (désactivé en prod) | monitoring |
+| 8 | ✅ Fait : tests API (27 tests MockMvc, tous verts) | socle de tests |
+| 9 | ✅ Fait : endpoints demandes (location, essai) + sinistres (§2.4) + branchement du store front | flux métier branché |
+| 10 | ⬜ À faire : emails de notification (demande reçue, décision, sinistre) | emails |
+| 11 | ⬜ À faire : upload d'images véhicules (endpoint `MultipartFile`) | upload |
+| 12 | ⬜ À faire : migrations Flyway + PostgreSQL en production | BDD |
 
-> L'interface admin du front est déjà réalisée (§1.3, routes `/admin/*`, données en localStorage) : elle n'attend plus que les endpoints ci-dessus.
+> L'interface admin du front est déjà réalisée (§1.3, routes `/admin/*`) : elle n'attend plus que les endpoints de demande/sinistre (§2.4).
 
 ### 2.8 Hors périmètre (exclus du cahier)
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { joursEntre, useDemandes } from "@/store/demandes";
+import { joursEntre, messageRefus, useDemandes } from "@/store/demandes";
 import type { Location } from "@/types/admin";
 import type { DemandeLocation, StatutDemande, StatutSinistre } from "@/types/demandes";
 import CarteDemande from "./CarteDemande";
@@ -14,6 +14,20 @@ const CLE_LOCATIONS_ENCOURS = "admin:locations";
 export default function AdminDemandes() {
   const { locations, essais, sinistres, statuerDemande, statuerSinistre } = useDemandes();
   const [onglet, setOnglet] = useState<"locations" | "essais" | "sinistres">("locations");
+  const [erreurStatut, setErreurStatut] = useState("");
+
+  /**
+   * Applique un changement de statut et affiche le refus du serveur.
+   * Un refus (400, 403…) ne modifie rien : la carte garde son statut.
+   */
+  async function changerStatut(action: Promise<unknown>) {
+    try {
+      await action;
+      setErreurStatut("");
+    } catch (erreur) {
+      setErreurStatut(messageRefus(erreur));
+    }
+  }
 
   const enAttente = (list: { statut: string }[]) => list.filter((d) => d.statut === "en_attente").length;
   const sinistresRecues = sinistres.filter((s) => s.statut === "recue" || s.statut === "en_examen").length;
@@ -98,6 +112,12 @@ export default function AdminDemandes() {
         </div>
       </div>
 
+      {erreurStatut && (
+        <p role="alert" className="bg-red-50 border border-red-300 text-red-700 text-sm rounded-xl p-3">
+          {erreurStatut}
+        </p>
+      )}
+
       {/* Onglets */}
       <div className="flex flex-wrap gap-2 border-b border-border-standard">
         {onglets.map((o) => (
@@ -131,7 +151,7 @@ export default function AdminDemandes() {
                 demande={d}
                 type="location"
                 onStatuer={(statut: StatutDemande, motifRefus) =>
-                  statuerDemande("locations", d.id, statut, motifRefus)
+                  void changerStatut(statuerDemande("locations", d.id, statut, motifRefus))
                 }
                 onOuvrirLocation={() => ouvrirLocation(d)}
               />
@@ -152,7 +172,7 @@ export default function AdminDemandes() {
                 demande={d}
                 type="essai"
                 onStatuer={(statut: StatutDemande, motifRefus) =>
-                  statuerDemande("essais", d.id, statut, motifRefus)
+                  void changerStatut(statuerDemande("essais", d.id, statut, motifRefus))
                 }
               />
             ))
@@ -170,7 +190,9 @@ export default function AdminDemandes() {
               <CarteSinistre
                 key={s.id}
                 sinistre={s}
-                onStatuer={(statut: StatutSinistre, decision) => statuerSinistre(s.id, statut, decision)}
+                onStatuer={(statut: StatutSinistre, decision) =>
+                  void changerStatut(statuerSinistre(s.id, statut, decision))
+                }
               />
             ))
           )}

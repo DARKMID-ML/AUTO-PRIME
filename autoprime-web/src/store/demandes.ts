@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { apiEnvoyer, apiGet } from "@/config/api";
 import type {
   DemandeEssai,
   DemandeLocation,
@@ -13,9 +14,13 @@ import type {
 /**
  * Store des demandes clients (demandes de location, essais, sinistres).
  *
- * ⚠️ Tout est stocké dans le localStorage le temps que l'API Spring Boot
- * prenne le relais : chaque fonction ci-dessous correspond à un futur appel
- * API (POST /api/vehicles/demande-location, PATCH /api/admin/demandes/:id…).
+ * La source de vérité est l'API Spring Boot :
+ *   POST  /api/demandes/location | /api/demandes/essai | /api/sinistres  (client)
+ *   GET   /api/demandes/location | /api/demandes/essai | /api/sinistres  (admin)
+ *   PATCH /api/…/{id}/statut                                             (admin)
+ *
+ * Le localStorage reste un miroir : il alimente le suivi client et permet au
+ * site de continuer à fonctionner quand le serveur est éteint.
  */
 
 const CLE = "sa:demandes";
@@ -31,6 +36,37 @@ export const LIBELLES_JUSTIFICATIFS: { type: TypeJustificatif; label: string; ai
 ];
 
 export const storeVide: StoreDemandes = { locations: [], essais: [], sinistres: [] };
+
+/** Message affichable pour une action refusée (ou pour un échec inattendu). */
+export function messageRefus(erreur: unknown): string {
+  return erreur instanceof Error && erreur.message
+    ? erreur.message
+    : "L'opération a échoué. Réessayez dans un instant.";
+}
+
+/**
+ * Écriture d'une demande côté serveur : renvoie l'objet enregistré, ou `null`
+ * quand le serveur est injoignable (le store bascule alors en repli local).
+ * Tout refus lève une erreur : rien n'est enregistré, ni côté serveur ni
+ * localement, et le message du serveur remonte jusqu'à l'écran.
+ */
+async function enregistrerAuServeur<T>(
+  setEnLigne: (enLigne: boolean) => void,
+  chemin: string,
+  methode: "POST" | "PATCH",
+  corps: unknown
+): Promise<T | null> {
+  const reponse = await apiEnvoyer<T>(chemin, methode, corps);
+  if (reponse.etat === "injoignable") {
+    setEnLigne(false);
+    return null;
+  }
+  // Le serveur a répondu : il est joignable, même s'il refuse l'écriture.
+  setEnLigne(true);
+  if (reponse.etat === "refus") throw new Error(reponse.message);
+  if (!reponse.donnees) throw new Error("Le serveur n'a pas renvoyé l'objet enregistré.");
+  return reponse.donnees;
+}
 
 function lire(): StoreDemandes {
   try {
@@ -73,7 +109,7 @@ export function joursEntre(debut: string, fin: string): number {
 }
 
 /**
- * Lit un fichier et renvoie un justificatif prêt à stocker.
+ * Lit un fichier et renvoie un justificatif prêt à envoyer.
  * Les images passent en data URL pour l'aperçu, tant qu'elles ne sont pas
  * trop lourdes ; sinon seul le nom du fichier est conservé (l'upload réel
  * se fera via l'API).
@@ -103,9 +139,19 @@ export function justificatifDepuisFichier(
   });
 }
 
+/** Identifiant local suivant (repli hors ligne uniquement). */
+const prochainId = (liste: { id: number }[]) =>
+  liste.reduce((max, d) => Math.max(max, d.id), 0) + 1;
+
 /** Hook principal : lit/écrit le store et expose les actions. */
 export function useDemandes() {
   const [store, setStore] = useState<StoreDemandes>(() => lire());
+  const [enLigne, setEnLigne] = useState(false);
+  const ref = useRef(store);
+
+  useEffect(() => {
+    ref.current = store;
+  }, [store]);
 
   useEffect(() => {
     ecrire(store);
@@ -118,73 +164,148 @@ export function useDemandes() {
     return () => window.removeEventListener("storage", surChangement);
   }, []);
 
-  const ajouterLocation = useCallback((demande: Omit<DemandeLocation, "id" | "createdAt" | "statut">) => {
-    setStore((s) => ({
-      ...s,
-      locations: [
-        {
-          ...demande,
-          id: s.locations.reduce((max, d) => Math.max(max, d.id), 0) + 1,
-          statut: "en_attente",
-          createdAt: new Date().toISOString().slice(0, 19),
-        },
-        ...s.locations,
-      ],
-    }));
+  // Hydratation depuis l'API. Les listes sont réservées aux comptes connectés :
+  // un visiteur reçoit 401 et garde simplement le miroir local.
+  useEffect(() => {
+    let vivant = true;
+    Promise.all([
+      apiGet<DemandeLocation[]>("/api/demandes/location"),
+      apiGet<DemandeEssai[]>("/api/demandes/essai"),
+      apiGet<Sinistre[]>("/api/sinistres"),
+    ]).then(([locations, essais, sinistres]) => {
+      if (!vivant || (!locations && !essais && !sinistres)) return;
+      const serveur: StoreDemandes = {
+        locations: locations ?? ref.current.locations,
+        essais: essais ?? ref.current.essais,
+        sinistres: sinistres ?? ref.current.sinistres,
+      };
+      setStore(serveur);
+      setEnLigne(true);
+    });
+    return () => {
+      vivant = false;
+    };
   }, []);
 
-  const ajouterEssai = useCallback((demande: Omit<DemandeEssai, "id" | "createdAt" | "statut">) => {
-    setStore((s) => ({
-      ...s,
-      essais: [
-        {
-          ...demande,
-          id: s.essais.reduce((max, d) => Math.max(max, d.id), 0) + 1,
-          statut: "en_attente",
-          createdAt: new Date().toISOString().slice(0, 19),
-        },
-        ...s.essais,
-      ],
-    }));
-  }, []);
+  const ajouterLocation = useCallback(
+    async (demande: Omit<DemandeLocation, "id" | "createdAt" | "statut">) => {
+      const creee = await enregistrerAuServeur<DemandeLocation>(setEnLigne, "/api/demandes/location", "POST", demande);
+      if (creee) {
+        setStore((s) => ({ ...s, locations: [creee, ...s.locations] }));
+        return creee;
+      }
+      // Serveur injoignable : la demande reste sur cet appareil.
+      const locale: DemandeLocation = {
+        ...demande,
+        id: prochainId(ref.current.locations),
+        statut: "en_attente",
+        createdAt: new Date().toISOString().slice(0, 19),
+      };
+      setStore((s) => ({ ...s, locations: [locale, ...s.locations] }));
+      return locale;
+    },
+    []
+  );
 
-  const ajouterSinistre = useCallback((sinistre: Omit<Sinistre, "id" | "createdAt" | "statut">) => {
-    setStore((s) => ({
-      ...s,
-      sinistres: [
-        {
-          ...sinistre,
-          id: s.sinistres.reduce((max, d) => Math.max(max, d.id), 0) + 1,
-          statut: "recue",
-          createdAt: new Date().toISOString().slice(0, 19),
-        },
-        ...s.sinistres,
-      ],
-    }));
-  }, []);
+  const ajouterEssai = useCallback(
+    async (demande: Omit<DemandeEssai, "id" | "createdAt" | "statut">) => {
+      const creee = await enregistrerAuServeur<DemandeEssai>(setEnLigne, "/api/demandes/essai", "POST", demande);
+      if (creee) {
+        setStore((s) => ({ ...s, essais: [creee, ...s.essais] }));
+        return creee;
+      }
+      // Serveur injoignable : la demande reste sur cet appareil.
+      const locale: DemandeEssai = {
+        ...demande,
+        id: prochainId(ref.current.essais),
+        statut: "en_attente",
+        createdAt: new Date().toISOString().slice(0, 19),
+      };
+      setStore((s) => ({ ...s, essais: [locale, ...s.essais] }));
+      return locale;
+    },
+    []
+  );
+
+  const ajouterSinistre = useCallback(
+    async (sinistre: Omit<Sinistre, "id" | "createdAt" | "statut">) => {
+      const cree = await enregistrerAuServeur<Sinistre>(setEnLigne, "/api/sinistres", "POST", sinistre);
+      if (cree) {
+        setStore((s) => ({ ...s, sinistres: [cree, ...s.sinistres] }));
+        return cree;
+      }
+      // Serveur injoignable : le sinistre reste sur cet appareil.
+      const local: Sinistre = {
+        ...sinistre,
+        id: prochainId(ref.current.sinistres),
+        statut: "recue",
+        createdAt: new Date().toISOString().slice(0, 19),
+      };
+      setStore((s) => ({ ...s, sinistres: [local, ...s.sinistres] }));
+      return local;
+    },
+    []
+  );
 
   // --- Actions admin ---------------------------------------------------------
   const statuerDemande = useCallback(
-    (type: "locations" | "essais", id: number, statut: StatutDemande, motifRefus?: string) => {
+    async (type: "locations" | "essais", id: number, statut: StatutDemande, motifRefus?: string) => {
+      const chemin = type === "locations" ? "/api/demandes/location" : "/api/demandes/essai";
+      const motif = statut === "refusee" ? motifRefus : undefined;
+      const maj = await enregistrerAuServeur<DemandeLocation | DemandeEssai>(setEnLigne, `${chemin}/${id}/statut`, "PATCH", {
+        statut,
+        motifRefus: motif,
+      });
+
+      if (maj) {
+        if (type === "locations") {
+          setStore((s) => ({
+            ...s,
+            locations: s.locations.map((d) => (d.id === id ? (maj as DemandeLocation) : d)),
+          }));
+        } else {
+          setStore((s) => ({
+            ...s,
+            essais: s.essais.map((d) => (d.id === id ? (maj as DemandeEssai) : d)),
+          }));
+        }
+        return;
+      }
+
+      // Serveur injoignable : décision locale (visible sur cet appareil seulement).
       setStore((s) => {
-        const liste = s[type].map((d) =>
-          d.id === id ? { ...d, statut, motifRefus: statut === "refusee" ? motifRefus : undefined } : d
-        );
+        const liste = s[type].map((d) => (d.id === id ? { ...d, statut, motifRefus: motif } : d));
         return { ...s, [type]: liste } as StoreDemandes;
       });
     },
     []
   );
 
-  const statuerSinistre = useCallback((id: number, statut: StatutSinistre, decision?: string) => {
-    setStore((s) => ({
-      ...s,
-      sinistres: s.sinistres.map((x) => (x.id === id ? { ...x, statut, decision } : x)),
-    }));
-  }, []);
+  const statuerSinistre = useCallback(
+    async (id: number, statut: StatutSinistre, decision?: string) => {
+      const maj = await enregistrerAuServeur<Sinistre>(setEnLigne, `/api/sinistres/${id}/statut`, "PATCH", {
+        statut,
+        decision,
+      });
+      if (maj) {
+        setStore((s) => ({
+          ...s,
+          sinistres: s.sinistres.map((x) => (x.id === id ? maj : x)),
+        }));
+        return;
+      }
+      // Serveur injoignable : décision locale (visible sur cet appareil seulement).
+      setStore((s) => ({
+        ...s,
+        sinistres: s.sinistres.map((x) => (x.id === id ? { ...x, statut, decision } : x)),
+      }));
+    },
+    []
+  );
 
   return {
     ...store,
+    enLigne,
     ajouterLocation,
     ajouterEssai,
     ajouterSinistre,

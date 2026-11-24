@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Vehicule } from "@/types/vehicule";
 import type { Justificatif } from "@/types/demandes";
-import { joursEntre, useDemandes } from "@/store/demandes";
+import { joursEntre, messageRefus, useDemandes } from "@/store/demandes";
 import { capturer } from "@/config/analytics";
 import JustificatifsInput from "./JustificatifsInput";
 
@@ -45,7 +45,7 @@ export default function DemandeModal({ vehicule, mode, onClose }: Props) {
     });
   }, [mode, vehicule.marque, vehicule.model]);
 
-  function envoyer(e: React.FormEvent) {
+  async function envoyer(e: React.FormEvent) {
     e.preventDefault();
     setErreur("");
 
@@ -64,15 +64,21 @@ export default function DemandeModal({ vehicule, mode, onClose }: Props) {
       justificatifs,
     };
 
-    if (estLocation) {
-      ajouterLocation({
-        ...commun,
-        dateDebut,
-        dateFin,
-        jours,
-      });
-    } else {
-      ajouterEssai({ ...commun, dateEssai });
+    try {
+      if (estLocation) {
+        await ajouterLocation({
+          ...commun,
+          dateDebut,
+          dateFin,
+          jours,
+        });
+      } else {
+        await ajouterEssai({ ...commun, dateEssai });
+      }
+    } catch (erreurEnvoi) {
+      // Refus du serveur : rien n'a été enregistré, on reste sur le formulaire.
+      setErreur(messageRefus(erreurEnvoi));
+      return;
     }
     // Étape clé du parcours : le replay PostHog y est rattaché (aucune donnée
     // personnelle dans les propriétés envoyées).

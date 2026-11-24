@@ -71,32 +71,87 @@ export async function apiGet<T>(chemin: string): Promise<T | null> {
 
 /** DELETE — renvoie true si le serveur a confirmé. */
 export async function apiDelete(chemin: string): Promise<boolean> {
-  try {
-    const reponse = await fetch(endPoint(chemin), {
-      method: "DELETE",
-      headers: entetes(false),
-    });
-    return reponse.ok;
-  } catch {
-    return false;
-  }
+  return (await apiEnvoyer<null>(chemin, "DELETE")).etat === "ok";
 }
 
-/** POST / PUT / PATCH avec corps JSON. */
+/** POST / PUT / PATCH avec corps JSON (null si le serveur refuse ou est coupé). */
 export async function apiSend<T>(
   chemin: string,
   methode: "POST" | "PUT" | "PATCH" | "DELETE",
   corps?: unknown,
 ): Promise<T | null> {
+  const reponse = await apiEnvoyer<T>(chemin, methode, corps);
+  return reponse.etat === "ok" ? reponse.donnees : null;
+}
+
+/**
+ * Résultat d'une écriture, qui distingue trois cas :
+ *   • `ok`          → le serveur a enregistré et renvoie l'objet à jour ;
+ *   • `refus`       → le serveur a répondu mais a refusé (validation, droits…) ;
+ *   • `injoignable` → aucune réponse (serveur éteint, réseau coupé).
+ * Un refus ne doit jamais être traité comme un repli local : l'écriture est
+ * annulée et le message est remonté à l'utilisateur.
+ */
+export type ResultatEcriture<T> =
+  | { etat: "ok"; donnees: T }
+  | { etat: "refus"; message: string }
+  | { etat: "injoignable" };
+
+/** Message lisible d'un refus : corps d'erreur Spring, sinon code HTTP. */
+async function messageDeRefus(reponse: Response): Promise<string> {
+  let corps: unknown = null;
   try {
-    const reponse = await fetch(endPoint(chemin), {
+    corps = await reponse.json();
+  } catch {
+    // corps non JSON (page d'erreur nginx…) : on garde le message par défaut
+  }
+  const objet = (corps ?? {}) as Record<string, unknown>;
+  const texte = (valeur: unknown) =>
+    typeof valeur === "string" && valeur.trim() !== "" ? valeur.trim() : null;
+
+  // Les erreurs de validation Spring sont dans `errors[].defaultMessage`.
+  const validation = Array.isArray(objet.errors)
+    ? objet.errors.map((e) => texte((e as { defaultMessage?: unknown }).defaultMessage))
+    : [];
+  const messages = [
+    ...validation,
+    texte(objet.message),
+    texte(objet.error),
+  ].filter((m): m is string => m !== null);
+
+  return messages[0] ?? `Le serveur a refusé la demande (HTTP ${reponse.status}).`;
+}
+
+/**
+ * POST / PUT / PATCH / DELETE qui distingue refus serveur et panne réseau.
+ * À utiliser pour les écritures où un repli local serait trompeur.
+ */
+export async function apiEnvoyer<T>(
+  chemin: string,
+  methode: "POST" | "PUT" | "PATCH" | "DELETE",
+  corps?: unknown,
+): Promise<ResultatEcriture<T>> {
+  let reponse: Response;
+  try {
+    reponse = await fetch(endPoint(chemin), {
       method: methode,
       headers: entetes(corps !== undefined),
       body: corps !== undefined ? JSON.stringify(corps) : undefined,
     });
-    if (!reponse.ok) return null;
-    return methode === "DELETE" ? null : ((await reponse.json()) as T);
   } catch {
-    return null;
+    return { etat: "injoignable" };
+  }
+
+  if (!reponse.ok) {
+    return { etat: "refus", message: await messageDeRefus(reponse) };
+  }
+
+  if (methode === "DELETE" || reponse.status === 204) {
+    return { etat: "ok", donnees: null as T };
+  }
+  try {
+    return { etat: "ok", donnees: (await reponse.json()) as T };
+  } catch {
+    return { etat: "ok", donnees: null as T };
   }
 }

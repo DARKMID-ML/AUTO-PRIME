@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Justificatif } from "@/types/demandes";
-import { useDemandes } from "@/store/demandes";
+import { messageRefus, useDemandes } from "@/store/demandes";
 import JustificatifsInput from "./JustificatifsInput";
 
 interface Props {
@@ -30,7 +30,7 @@ export default function SinistreModal({ client, telephone, vehicule, onClose }: 
   const [erreur, setErreur] = useState("");
   const [envoye, setEnvoye] = useState(false);
 
-  function envoyer(e: React.FormEvent) {
+  async function envoyer(e: React.FormEvent) {
     e.preventDefault();
     setErreur("");
 
@@ -43,16 +43,22 @@ export default function SinistreModal({ client, telephone, vehicule, onClose }: 
       return;
     }
 
-    ajouterSinistre({
-      client: client.trim(),
-      telephone: telephone.trim(),
-      vehicule: vehiculeSaisi.trim(),
-      immatriculation: immatriculation.trim() || undefined,
-      dateIncident,
-      description: description.trim(),
-      gravite,
-      justificatifs,
-    });
+    try {
+      await ajouterSinistre({
+        client: client.trim(),
+        telephone: telephone.trim(),
+        vehicule: vehiculeSaisi.trim(),
+        immatriculation: immatriculation.trim() || undefined,
+        dateIncident,
+        description: description.trim(),
+        gravite,
+        justificatifs,
+      });
+    } catch (erreurEnvoi) {
+      // Refus du serveur : le signalement n'est pas enregistré.
+      setErreur(messageRefus(erreurEnvoi));
+      return;
+    }
     setEnvoye(true);
   }
 
